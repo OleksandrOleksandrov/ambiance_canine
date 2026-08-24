@@ -1,5 +1,6 @@
 import React from 'react';
 import './globals.css';
+import { ThemeProvider } from '../contexts/ThemeContext';
 
 export const metadata = {
   title: 'Ambiance Canine & Paradise des Animaux',
@@ -12,8 +13,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="bg-neutral-50 text-neutral-800 font-sans" suppressHydrationWarning>{children}</body>
+    <html lang="en" suppressHydrationWarning data-theme="light">
+      <body className="font-sans" suppressHydrationWarning>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }

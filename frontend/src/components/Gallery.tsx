@@ -1,7 +1,16 @@
+'use client';
+
 import React from 'react';
+import { useTheme } from '../contexts/ThemeContext';
 import { GalleryImage } from '../types';
 
 export default function Gallery(): React.JSX.Element {
+  const { theme } = useTheme();
+  
+  const bgClass = theme === 'dark' ? 'bg-[#111827]' : 'bg-neutral-100';
+  const titleColor = theme === 'dark' ? 'text-[#f3f4f6]' : 'text-neutral-900';
+  const subColor = theme === 'dark' ? 'text-[#9ca3af]' : 'text-neutral-500';
+
   const images: GalleryImage[] = Array.from({ length: 15 }).map((_, i) => ({
     id: i + 1,
     name: `Image ${i + 1}`,
@@ -10,11 +19,11 @@ export default function Gallery(): React.JSX.Element {
   }));
 
   return (
-    <section id="gallery" className="py-20 bg-neutral-100">
+    <section id="gallery" className={`py-20 ${bgClass}`}>
       <div className="w-full px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-serif font-bold text-neutral-900">Salon Gallery</h2>
-          <p className="text-neutral-500 mt-2">Moments of care, grooming, and styling</p>
+          <h2 className={`text-3xl font-serif font-bold ${titleColor}`}>Salon Gallery</h2>
+          <p className={`${subColor} mt-2`}>Moments of care, grooming, and styling</p>
         </div>
 
         <div className="grid grid-cols-5 gap-1">

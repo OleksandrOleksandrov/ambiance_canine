@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { Service } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface ServiceBlock {
   title: string;
@@ -13,6 +14,7 @@ interface ServiceBlock {
 }
 
 export default function Services(): React.JSX.Element {
+  const { theme } = useTheme();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +26,6 @@ export default function Services(): React.JSX.Element {
       .catch((err) => console.error('Error fetching services:', err));
   }, []);
 
-  // Determine image folder based on subtitle category
   const getImageForCategory = (subtitle: string): string => {
     const folderMapping: Record<string, string> = {
       'Holiday, design and creativity': 'design',
@@ -32,9 +33,7 @@ export default function Services(): React.JSX.Element {
       'Spa, ozon therapy': 'spa',
     };
     const folder = folderMapping[subtitle] || 'design';
-    
-    // Dynamic image filename: photo_{category_substring}_{index}.jpg
-    // Examples: photo_design_1.jpg, photo_teeth_brush_1.jpg, photo_spa_1.jpg
+
     const getImagePath = (folder: string, index: number): string => {
       return `/${folder}/photo_${folder}_${index}.jpg`;
     };
@@ -42,7 +41,6 @@ export default function Services(): React.JSX.Element {
     return getImagePath(folder, 1);
   };
 
-  // Group services by subtitle category
   const groupedServices = useMemo(() => {
     const groups: Record<string, Service[]> = {};
     services.forEach(service => {
@@ -54,7 +52,6 @@ export default function Services(): React.JSX.Element {
     return groups;
   }, [services]);
 
-  // Create service blocks with images
   const serviceBlocks: ServiceBlock[] = useMemo(() => {
     const categories: { key: string; title: string; image: string }[] = [
       { key: 'Holiday, design and creativity', title: 'Holiday, Design & Creativity', image: '/design/photo_design_1.jpg' },
@@ -73,24 +70,30 @@ export default function Services(): React.JSX.Element {
   }, [groupedServices]);
 
   return (
-    <section id="services" className="py-20 bg-gradient-to-b from-white to-neutral-50">
+    <section id="services" className={`py-20 ${theme === 'dark' ? 'bg-gradient-to-b from-[#1f2937] to-[#111827]' : 'bg-gradient-to-b from-white to-neutral-50'}`}>
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-serif font-bold text-neutral-900">Our Services</h2>
-          <p className="text-neutral-500 mt-3 text-lg">Comprehensive care for your beloved dogs</p>
+          <h2 className={`text-4xl font-serif font-bold ${theme === 'dark' ? 'text-[#f3f4f6]' : 'text-neutral-900'}`}>Our Services</h2>
+          <p className={`${theme === 'dark' ? 'text-[#9ca3af]' : 'text-neutral-500'} mt-3 text-lg`}>Comprehensive care for your beloved dogs</p>
         </div>
 
         {/* Horizontal Row with Text and Image */}
         <div className="flex flex-row gap-8 w-[3200px]">
           {serviceBlocks.map((block, blockIndex) => (
             <div key={block.title} className="p-8 flex-shrink-0">
-              <h3 className={`text-xl font-serif font-bold ${blockIndex === 0 ? 'text-purple-900' : blockIndex === 1 ? 'text-teal-900' : 'text-pink-900'}`}>
+              <h3 className={`text-xl font-serif font-bold ${
+                theme === 'dark' 
+                  ? blockIndex === 0 ? 'text-purple-300' : blockIndex === 1 ? 'text-teal-300' : 'text-pink-300'
+                  : blockIndex === 0 ? 'text-purple-900' : blockIndex === 1 ? 'text-teal-900' : 'text-pink-900'
+              }`}>
                 {block.title}
               </h3>
               <img
                 src={block.image}
                 alt={block.title}
-                className={`w-80 h-128 mt-4 object-cover rounded-xl border border-neutral-200 ${blockIndex === 0 ? 'rounded-t-lg rounded-b-none' : ''} ${blockIndex === 2 ? 'rounded-t-none rounded-b-lg' : ''}`}
+                className={`w-80 h-128 mt-4 object-cover rounded-xl border ${theme === 'dark' ? 'border-[#374151]' : 'border-neutral-200'} ${
+                  blockIndex === 0 ? 'rounded-t-lg rounded-b-none' : ''
+                } ${blockIndex === 2 ? 'rounded-t-none rounded-b-lg' : ''}`}
                 loading="lazy"
                 onError={(e) => {
                   e.currentTarget.src = `http://via.placeholder.com/320x540?text=${block.title.replace(/ /g, '+')}`;
