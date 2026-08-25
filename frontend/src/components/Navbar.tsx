@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import { Lottie } from 'lottie-react';
+import dogPawAnimation from '../assets/dog-paw-walk.json';
 import { useTheme } from '../contexts/ThemeContext';
 
 function ThemeToggle(): React.JSX.Element {
@@ -84,7 +86,7 @@ export default function Navbar(): React.JSX.Element {
       <div className="max-w-6xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <a href="#" className="flex items-center space-x-2">
-            <span className="text-2xl">🐾</span>
+            <Lottie src={dogPawAnimation} loop={true} autoplay={true} style={{ width: 24, height: 24, filter: theme === 'dark' ? 'brightness(0) invert(1)' : 'brightness(0)' }} />
             <div>
               <h1 className={`${theme === 'dark' ? 'text-[#f3f4f6]' : 'text-neutral-900'} text-lg font-bold tracking-tight leading-none`}>
                 L'Éden des Animaux
