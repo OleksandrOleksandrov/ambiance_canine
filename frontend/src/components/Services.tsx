@@ -35,7 +35,7 @@ export default function Services(): React.JSX.Element {
     const folder = folderMapping[subtitle] || 'design';
 
     const getImagePath = (folder: string, index: number): string => {
-      return `/${folder}/photo_${folder}_${index}.jpg`;
+      return `https://ambiance-dev.s3.us-east-1.amazonaws.com/${folder}/photo_${folder}_${index}.jpg`;
     };
 
     return getImagePath(folder, 1);
@@ -54,9 +54,9 @@ export default function Services(): React.JSX.Element {
 
   const serviceBlocks: ServiceBlock[] = useMemo(() => {
     const categories: { key: string; title: string; image: string }[] = [
-      { key: 'Holiday, design and creativity', title: 'Holiday, Design & Creativity', image: '/design/photo_design_1.jpg' },
-      { key: 'Teeth brushing', title: 'Teeth Brushing', image: '/teeth_brush/photo_teeth_brush_1.jpg' },
-      { key: 'Spa, ozon therapy', title: 'Spa & Ozon Therapy', image: '/spa/photo_spa_1.jpg' },
+      { key: 'Holiday, design and creativity', title: 'Holiday, Design & Creativity', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/design/photo_design_1.jpg' },
+      { key: 'Teeth brushing', title: 'Teeth Brushing', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/teeth_brush/photo_teeth_brush_1.jpg' },
+      { key: 'Spa, ozon therapy', title: 'Spa & Ozon Therapy', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/spa/photo_spa_1.jpg' },
     ];
 
     return categories.map(category => ({
