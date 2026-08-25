@@ -40,6 +40,7 @@ export interface Place {
   groomers: Groomer[];
   address: string;
   addressLink: string;
+  placesCalled?: string;
 }
 
 export interface Groomer {
