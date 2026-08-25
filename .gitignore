@@ -172,3 +172,4 @@ cython_debug/
 finale/.bedrock_agentcore.yaml
 finale/Dockerfile
 finale/.dockerignore
+.tsbuilding

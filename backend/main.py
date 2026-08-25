@@ -38,7 +38,7 @@ def get_services():
                 "prevent matting, control shedding, and check for health issues."
             ),
             "icon": "✂️",
-            "image_folder": "design",
+            "image": "/images/services/design/photo_1.jpg",
         },
         {
             "id": "teeth-brushing",
@@ -50,7 +50,7 @@ def get_services():
                 "to reduce plaque and tartar buildup."
             ),
             "icon": "🪥",
-            "image_folder": "teeth_brush",
+            "image": "/images/services/teeth_brush/photo_1.jpg",
         },
         {
             "id": "ozone-spa",
@@ -62,16 +62,13 @@ def get_services():
                 "and promotes healing for hot spots and arthritis."
             ),
             "icon": "🛁",
-            "image_folder": "spa",
+            "image": "/images/services/spa/photo_1.jpg",
         },
     ]
-    # Convert image_folder to image path
-    for service in services:
-        service["image"] = f"/public/{service['image_folder']}/photo_1.jpg"
     return services
 
 
-@app.post("/api/booking")
+@app.get("/api/booking")
 def create_booking(booking: BookingRequest):
     if (
         not booking.name.strip()
@@ -87,5 +84,70 @@ def create_booking(booking: BookingRequest):
 
     return {
         "success": True,
-        "message": "Your visit request has been sent! We will contact you shortly to confirm your booking.",
+        "message": "Your visit request has been saved! We will contact you shortly to confirm your booking.",
+    }
+
+
+@app.get("/api/places")
+def get_places():
+    # Mock place data - add this endpoint
+    return {
+        "places": [
+            {
+                "id": "1",
+                "title": "Cagnes-sur-Mer",
+                "place": "Cagnes-sur-Mer",
+                "phone_number": ["+33 4 93 00 00 00"],
+                "photos": [
+                    "/saloon/main-salon-1.jpg",
+                    "/saloon/main-salon-2.jpg",
+                    "/saloon/main-salon-3.jpg",
+                ],
+                "groomers": [
+                    {
+                        "id": "1",
+                        "name": "Sofia",
+                        "placesIds": ["1"],
+                        "photo": "/groomer/groomer-1.jpg",
+                    }
+                ],
+                "address": "64 Bd Maréchal Juin, 06800 Cagnes-sur-Mer",
+                "addressLink": "https://www.google.com/maps/search/?api=1&query=64+Bd+Marechal+Juin,+06800+Cages-sur-Mer",
+            },
+            {
+                "id": "2",
+                "title": "Nice",
+                "place": "Nice",
+                "phone_number": ["+33 6 00 00 00 00"],
+                "photos": [
+                    "/saloon/mobile-service-1.jpg",
+                    "/saloon/mobile-service-2.jpg",
+                    "/saloon/mobile-service-3.jpg",
+                ],
+                "groomers": [
+                    {
+                        "id": "1",
+                        "name": "Sofia",
+                        "placesIds": ["1"],
+                        "photo": "/groomer/groomer-1.jpg",
+                    }
+                ],
+                "address": "5 Rue Vernier, 06000 Nice",
+                "addressLink": "https://www.google.com/maps/search/?api=1&query=5+Rue+Vernier,+06000+Nice",
+            },
+        ],
+        "groomers": [
+            {
+                "id": "1",
+                "name": "Sofia",
+                "placesIds": ["1"],
+                "photo": "/groomer/groomer-1.jpg",
+            },
+            {
+                "id": "2",
+                "name": "Sarah",
+                "placesIds": ["2"],
+                "photo": "/groomer/groomer-2.jpg",
+            },
+        ],
     }
