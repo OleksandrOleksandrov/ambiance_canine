@@ -15,6 +15,8 @@ export interface BookingFormData {
   service: string;
   message: string;
   image_folder?: string;
+  place_id?: string;
+  groomer_id?: string;
 }
 
 export interface StatusState {
@@ -27,4 +29,27 @@ export interface GalleryImage {
   name: string;
   alt: string;
   url: string;
+}
+
+export interface Place {
+  id: string;
+  title: string;
+  place: string;
+  phone_number: string[];
+  photos: string[];
+  groomers: Groomer[];
+  address: string;
+  addressLink: string;
+}
+
+export interface Groomer {
+  id: string;
+  name: string;
+  placesIds: string[];
+  photo: string;
+}
+
+export interface PlacesData {
+  places: Place[];
+  groomers: Groomer[];
 }
