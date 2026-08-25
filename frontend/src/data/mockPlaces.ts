@@ -31,7 +31,7 @@ export const places: Place[] = [
 
 // Groomers
 export const groomers: Groomer[] = [
-  { id: '1', name: 'Luda', placesIds: ['1', '2'], photo: '/groomer/image_groomer_luda_1.jpg' },
+  { id: '1', name: 'Luda', placesIds: ['1', '2'], photo: '/groomer/image_groomer_luda_1.png' },
   { id: '2', name: 'Natasha', placesIds: ['1', '2'], photo: '/groomer/image_groomer_natasha_1.jpg' },
 ];
 

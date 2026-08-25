@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Place, Groomer } from "../types";
 import { places as mockPlaces } from "../data/mockPlaces";
 import { useTheme } from "../contexts/ThemeContext";
@@ -106,8 +107,38 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
             </div>
           </div>
 
-          {/* View Location Button */}
-          <div className={isDark ? "mt-8" : "mt-6"}>
+          {/* Actions */}
+          <div
+            className={`flex flex-wrap items-center gap-3 ${
+              isDark ? "mt-8" : "mt-6"
+            }`}
+          >
+            <Link
+              href={`/places/${place.id}`}
+              className={`inline-flex items-center gap-2 px-5 py-2.5 ${buttonBg} transition-colors text-xs font-semibold rounded-xl`}
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+              <span>View Details</span>
+            </Link>
+
             <a
               href={place.addressLink}
               target="_blank"
