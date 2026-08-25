@@ -15,7 +15,7 @@ export default function Gallery(): React.JSX.Element {
     id: i + 1,
     name: `Image ${i + 1}`,
     alt: `Salon Image ${i + 1}`,
-    url: `/gallery/photo_${i + 1}.jpg`,
+    url: `https://ambiance-dev.s3.us-east-1.amazonaws.com/gallery/photo_gallery_${i + 1}.jpg`,
   }));
 
   return (
