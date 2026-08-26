@@ -70,7 +70,7 @@ export default function Services(): React.JSX.Element {
   }, [groupedServices]);
 
   return (
-    <section id="services" className={`py-6 ${theme === 'dark' ? 'bg-gradient-to-b from-[#1f2937] to-[#111827]' : 'bg-gradient-to-b from-white to-neutral-50'}`}>
+    <section id="services" className={`py-8 ${theme === 'dark' ? 'bg-gradient-to-b from-[#1f2937] to-[#111827]' : 'bg-gradient-to-b from-white to-neutral-50'}`}>
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-6">
           <h2 className={`text-4xl font-serif font-bold ${theme === 'dark' ? 'text-[#f3f4f6]' : 'text-neutral-900'}`}>Our Services</h2>
