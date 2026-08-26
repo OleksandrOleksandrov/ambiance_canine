@@ -10,7 +10,7 @@ export const places: Place[] = [
       'https://ambiance-dev.s3.us-east-1.amazonaws.com/saloon/image_place_nice_1.jpg',
       'https://ambiance-dev.s3.us-east-1.amazonaws.com/saloon/image_place_nice_2.jpg',
     ],
-    groomers: [{ id: '1', name: 'Luda', placesIds: ['1'], photo: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/groomer-1.jpg' }, { id: '2', name: 'Natasha', placesIds: ['1'], photo: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/groomer-1.jpg' }],
+    groomers: [{ id: '1', name: 'Oleksandr', placesIds: ['1'], photo: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/groomer-1.jpg' }, { id: '2', name: 'Natasha', placesIds: ['1'], photo: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/groomer-1.jpg' }],
     address: '64 Bd Maréchal Juin, 06800 Cages-sur-Mer',
     addressLink: 'https://www.google.com/maps/search/?api=1&query=64+Bd+Marechal+Juin,+06800+Cages-sur-Mer',
   },
@@ -23,7 +23,7 @@ export const places: Place[] = [
       'https://ambiance-dev.s3.us-east-1.amazonaws.com/saloon/image_place_nice_1.jpg',
       'https://ambiance-dev.s3.us-east-1.amazonaws.com/saloon/image_place_nice_2.jpg',
     ],
-    groomers: [{ id: '1', name: 'Luda', placesIds: ['1'], photo: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/groomer-1.jpg' }, { id: '2', name: 'Natasha', placesIds: ['1'], photo: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/groomer-1.jpg' }],
+    groomers: [{ id: '1', name: 'Oleksandr', placesIds: ['1'], photo: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/groomer-1.jpg' }, { id: '2', name: 'Natasha', placesIds: ['1'], photo: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/groomer-1.jpg' }],
     address: '5 Rue Vernier, 06000 Nice',
     addressLink: 'https://www.google.com/maps/search/?api=1&query=5+Rue+Vernier,+06000+Nice',
   },
@@ -31,7 +31,7 @@ export const places: Place[] = [
 
 // Groomers
 export const groomers: Groomer[] = [
-  { id: '1', name: 'Luda', placesIds: ['1', '2'], photo: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/groomer/image_groomer_luda_1.png' },
+  { id: '1', name: 'Oleksandr', placesIds: ['1', '2'], photo: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/groomer/image_groomer_oleksandr_1.jpeg' },
   { id: '2', name: 'Natasha', placesIds: ['1', '2'], photo: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/groomer/image_groomer_natasha_1.jpg' },
 ];
 
