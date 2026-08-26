@@ -22,7 +22,7 @@ export default function Hero(): React.JSX.Element {
     : 'bg-white border border-neutral-300 text-neutral-800 hover:bg-neutral-100';
 
   return (
-    <section className={`bg-gradient-to-b ${theme === 'dark' ? 'from-[#171717] to-[#0a0a0a]' : 'from-amber-50 to-neutral-50'} py-20 md:py-32`}>
+    <section className={`bg-gradient-to-b ${theme === 'dark' ? 'from-[#171717] to-[#0a0a0a]' : 'from-amber-50 to-neutral-50'} py-12 md:py-16`}>
       <div className="max-w-4xl mx-auto text-center px-4">
         <span className={`${badgeClasses} mb-4 inline-block`}>
           Personal Stylist for Dogs

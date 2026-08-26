@@ -190,12 +190,12 @@ export default function PlaceSelect() {
       id="locations"
       className={
         isDark
-          ? "py-20 md:py-32 bg-gradient-to-b from-[#1f2937] to-[#111827] min-h-screen text-white"
-          : "py-20 md:py-32 bg-gradient-to-b from-white to-neutral-50 min-h-screen text-neutral-900"
+          ? "py-10 bg-gradient-to-b from-[#1f2937] to-[#111827] min-h-screen text-white"
+          : "py-10 bg-gradient-to-b from-white to-neutral-50 min-h-screen text-neutral-900"
       }
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center max-w-2xl mx-auto mb-16 md:mb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-2xl mx-auto mb-6">
           <h2
             className={`text-4xl md:text-5xl font-serif font-bold tracking-tight ${
               isDark ? "text-white" : "text-neutral-900"

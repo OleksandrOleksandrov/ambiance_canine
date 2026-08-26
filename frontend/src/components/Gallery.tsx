@@ -19,9 +19,9 @@ export default function Gallery(): React.JSX.Element {
   }));
 
   return (
-    <section id="gallery" className={`py-20 ${bgClass}`}>
+    <section id="gallery" className={`py-10 ${bgClass}`}>
       <div className="w-full px-4">
-        <div className="text-center mb-12">
+         <div className="text-center mb-6">
           <h2 className={`text-3xl font-serif font-bold ${titleColor}`}>Salon Gallery</h2>
           <p className={`${subColor} mt-2`}>Moments of care, grooming, and styling</p>
         </div>

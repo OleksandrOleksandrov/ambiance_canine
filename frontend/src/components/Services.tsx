@@ -70,17 +70,17 @@ export default function Services(): React.JSX.Element {
   }, [groupedServices]);
 
   return (
-    <section id="services" className={`py-20 ${theme === 'dark' ? 'bg-gradient-to-b from-[#1f2937] to-[#111827]' : 'bg-gradient-to-b from-white to-neutral-50'}`}>
+    <section id="services" className={`py-6 ${theme === 'dark' ? 'bg-gradient-to-b from-[#1f2937] to-[#111827]' : 'bg-gradient-to-b from-white to-neutral-50'}`}>
       <div className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-6">
           <h2 className={`text-4xl font-serif font-bold ${theme === 'dark' ? 'text-[#f3f4f6]' : 'text-neutral-900'}`}>Our Services</h2>
           <p className={`${theme === 'dark' ? 'text-[#9ca3af]' : 'text-neutral-500'} mt-3 text-lg`}>Comprehensive care for your beloved dogs</p>
         </div>
 
         {/* Horizontal Row with Text and Image */}
-        <div className="flex flex-row gap-8 w-[3200px]">
+        <div className="flex flex-row gap-4 w-[3200px]">
           {serviceBlocks.map((block, blockIndex) => (
-            <div key={block.title} className="p-8 flex-shrink-0">
+            <div key={block.title} className="p-4 flex-shrink-0">
               <h3 className={`text-xl font-serif font-bold ${
                 theme === 'dark' 
                   ? blockIndex === 0 ? 'text-purple-300' : blockIndex === 1 ? 'text-teal-300' : 'text-pink-300'
