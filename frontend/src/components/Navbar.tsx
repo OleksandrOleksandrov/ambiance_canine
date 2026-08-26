@@ -105,11 +105,8 @@ export default function Navbar(): React.JSX.Element {
               <a href="#gallery" className={`${theme === 'dark' ? 'hover:text-[#fbbf24] text-[#d1d5db]' : 'hover:text-amber-600 text-neutral-600'} transition-colors`}>
                 Gallery
               </a>
-              <a href="#booking" className={`${theme === 'dark' ? 'hover:text-[#fbbf24] text-[#f59e0b]' : 'hover:text-amber-600 text-neutral-800'} transition-colors font-bold`}>
+              <a href="#locations" className={`${theme === 'dark' ? 'hover:text-[#fbbf24] text-[#f59e0b]' : 'hover:text-amber-600 text-neutral-800'} transition-colors font-bold`}>
                 Book Visit
-              </a>
-              <a href="#contact" className={`${theme === 'dark' ? 'hover:text-[#fbbf24] text-[#d1d5db]' : 'hover:text-amber-600 text-neutral-600'} transition-colors`}>
-                Contact
               </a>
             </nav>
 

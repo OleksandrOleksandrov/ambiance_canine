@@ -6,7 +6,6 @@ import Hero from '../components/Hero';
 import Services from '../components/Services';
 import PlaceSelect from '../components/PlaceSelect';
 import Gallery from '../components/Gallery';
-import ContactBooking from '../components/ContactBooking';
 import Footer from '../components/Footer';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -19,13 +18,12 @@ export default function Home() {
         <Navbar />
         {/* Theme switcher is now available in the Navbar */}
       </div>
-      <div className="mt-16">
+      <div className="mt-8">
         <Hero />
       </div>
       <Services />
       <PlaceSelect />
       <Gallery />
-      <ContactBooking />
       <Footer />
     </main>
   );
