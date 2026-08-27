@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Service } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
+import BeforeAfterComparison from './BeforeAfterComparison';
 
 interface ServiceBlock {
   title: string;
@@ -11,6 +12,7 @@ interface ServiceBlock {
   icon: string;
   services: Service[];
   image: string;
+  afterImage?: string;
 }
 
 export default function Services(): React.JSX.Element {
@@ -18,12 +20,20 @@ export default function Services(): React.JSX.Element {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [designImageIndex, setDesignImageIndex] = useState(1);
 
   useEffect(() => {
     fetch('http://localhost:8000/api/services')
       .then((res) => res.json())
       .then((data: Service[]) => setServices(data))
       .catch((err) => console.error('Error fetching services:', err));
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDesignImageIndex(prev => prev >= 5 ? 1 : prev + 1);
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const getImageForCategory = (subtitle: string): string => {
@@ -56,9 +66,9 @@ export default function Services(): React.JSX.Element {
   }, [services]);
 
   const serviceBlocks: ServiceBlock[] = useMemo(() => {
-    const categories: { key: string; title: string; image: string }[] = [
-      { key: 'Holiday, design and creativity', title: 'Holiday, Design & Creativity', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/design/photo_design_1.jpg' },
-      { key: 'Teeth brushing', title: 'Teeth Brushing', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/teeth_brush/photo_teeth_brush_1.jpg' },
+    const categories: { key: string; title: string; image: string; afterImage?: string }[] = [
+      { key: 'Holiday, design and creativity', title: 'Holiday, Design & Creativity', image: `https://ambiance-dev.s3.us-east-1.amazonaws.com/design/photo_design_${designImageIndex}.jpg` },
+      { key: 'Teeth brushing', title: 'Teeth Brushing', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/teeth_brush/photo_teeth_brush_1.jpg', afterImage: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/teeth_brush/photo_teeth_brush_2.jpg' },
       { key: 'Spa, ozon therapy', title: 'Spa & Ozon Therapy', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/spa/video_spa_1.mov' },
     ];
 
@@ -69,8 +79,9 @@ export default function Services(): React.JSX.Element {
       icon: '🎨',
       services: groupedServices[category.key] || [],
       image: category.image,
+      afterImage: category.afterImage,
     }));
-  }, [groupedServices]);
+  }, [groupedServices, designImageIndex]);
 
   return (
     <section id="services" className={`py-8 ${theme === 'dark' ? 'bg-gradient-to-b from-[#1f2937] to-[#111827]' : 'bg-gradient-to-b from-white to-neutral-50'}`}>
@@ -99,6 +110,16 @@ export default function Services(): React.JSX.Element {
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                   }}
+                />
+              ) : block.afterImage ? (
+                <BeforeAfterComparison
+                  beforeImage={block.image}
+                  afterImage={block.afterImage}
+                  beforeLabel="Before"
+                  afterLabel="After"
+                  className="w-80 h-128 mt-4"
+                  autoPlay
+                  autoPlayInterval={4000}
                 />
               ) : (
                 <img
