@@ -21,6 +21,7 @@ export default function Services(): React.JSX.Element {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [designImageIndex, setDesignImageIndex] = useState(1);
+  const mobileMediaHeight = '600px';
 
   useEffect(() => {
     fetch('http://localhost:8000/api/services')
@@ -38,9 +39,9 @@ export default function Services(): React.JSX.Element {
 
   const getImageForCategory = (subtitle: string): string => {
     const folderMapping: Record<string, string> = {
-      'Holiday, design and creativity': 'design',
-      'Teeth brushing': 'teeth_brush',
-      'Spa, ozon therapy': 'spa',
+      'Hygiene, Health & Creative Design': 'design',
+      'Dental Hygiene & Care': 'teeth_brush',
+      'Deep Cleanse & Healing Bath': 'spa',
     };
     const folder = folderMapping[subtitle] || 'design';
 
@@ -67,9 +68,9 @@ export default function Services(): React.JSX.Element {
 
   const serviceBlocks: ServiceBlock[] = useMemo(() => {
     const categories: { key: string; title: string; image: string; afterImage?: string }[] = [
-      { key: 'Holiday, design and creativity', title: 'Holiday, Design & Creativity', image: `https://ambiance-dev.s3.us-east-1.amazonaws.com/design/photo_design_${designImageIndex}.jpg` },
-      { key: 'Teeth brushing', title: 'Teeth Brushing', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/teeth_brush/photo_teeth_brush_1.jpg', afterImage: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/teeth_brush/photo_teeth_brush_2.jpg' },
-      { key: 'Spa, ozon therapy', title: 'Spa & Ozon Therapy', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/spa/video_spa_1.mov' },
+      { key: 'Hygiene, Health & Creative Design', title: 'Holiday, Design & Creativity', image: `https://ambiance-dev.s3.us-east-1.amazonaws.com/design/photo_design_${designImageIndex}.jpg` },
+      { key: 'Dental Hygiene & Care', title: 'Teeth Brushing', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/teeth_brush/photo_teeth_brush_1.jpg', afterImage: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/teeth_brush/photo_teeth_brush_2.jpg' },
+      { key: 'Deep Cleanse & Healing Bath', title: 'Spa & Ozon Therapy', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/spa/video_spa_1.mov' },
     ];
 
     return categories.map(category => ({
@@ -92,17 +93,17 @@ export default function Services(): React.JSX.Element {
         </div>
 
         {/* Horizontal Row with Text and Image */}
-        <div className="flex flex-row gap-4 w-[3200px]">
+        <div className="flex flex-col md:flex-row gap-4">
           {serviceBlocks.map((block, blockIndex) => (
-            <div key={block.title} className="p-4 flex-shrink-0">
+            <div key={block.title} className="w-full md:flex-1">
               <h3 className={`text-xl font-serif font-bold ${theme === 'dark' ? 'text-[#f3f4f6]' : 'text-neutral-900'}`}>
                 {block.title}
               </h3>
               {block.image.endsWith('.mov') ? (
                 <video
                   src={block.image}
-                  className={`w-80 h-128 mt-4 object-cover rounded-xl border ${theme === 'dark' ? 'border-[#374151]' : 'border-neutral-200'}`}
-                  controls
+                  className={`w-full h-[var(--mobile-height)] md:w-full md:h-[512px] mt-4 object-cover rounded-xl border ${theme === 'dark' ? 'border-[#374151]' : 'border-neutral-200'}`}
+                  style={{ '--mobile-height': mobileMediaHeight } as React.CSSProperties}
                   autoPlay
                   muted
                   loop
@@ -117,15 +118,18 @@ export default function Services(): React.JSX.Element {
                   afterImage={block.afterImage}
                   beforeLabel="Before"
                   afterLabel="After"
-                  className="w-80 h-128 mt-4"
+                  className="w-full h-[var(--mobile-height)] md:w-full md:h-[512px] mt-4 object-cover rounded-xl"
+                  style={{ '--mobile-height': mobileMediaHeight } as React.CSSProperties}
                   autoPlay
-                  autoPlayInterval={4000}
+                  autoPlayInterval={6000}
+                  fadeDuration={1500}
                 />
               ) : (
                 <img
                   src={block.image}
                   alt={block.title}
-                  className={`w-80 h-128 mt-4 object-cover rounded-xl border ${theme === 'dark' ? 'border-[#374151]' : 'border-neutral-200'}`}
+                  className={`w-full h-[var(--mobile-height)] md:w-full md:h-[512px] mt-4 object-cover rounded-xl border ${theme === 'dark' ? 'border-[#374151]' : 'border-neutral-200'}`}
+                  style={{ '--mobile-height': mobileMediaHeight } as React.CSSProperties}
                   loading="lazy"
                   onError={(e) => {
                     e.currentTarget.src = `http://via.placeholder.com/320x540?text=${block.title.replace(/ /g, '+')}`;
