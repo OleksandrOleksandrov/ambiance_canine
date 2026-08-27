@@ -35,6 +35,9 @@ export default function Services(): React.JSX.Element {
     const folder = folderMapping[subtitle] || 'design';
 
     const getImagePath = (folder: string, index: number): string => {
+      if (folder === 'spa') {
+        return 'https://ambiance-dev.s3.us-east-1.amazonaws.com/spa/video_spa_1.mov';
+      }
       return `https://ambiance-dev.s3.us-east-1.amazonaws.com/${folder}/photo_${folder}_${index}.jpg`;
     };
 
@@ -56,7 +59,7 @@ export default function Services(): React.JSX.Element {
     const categories: { key: string; title: string; image: string }[] = [
       { key: 'Holiday, design and creativity', title: 'Holiday, Design & Creativity', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/design/photo_design_1.jpg' },
       { key: 'Teeth brushing', title: 'Teeth Brushing', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/teeth_brush/photo_teeth_brush_1.jpg' },
-      { key: 'Spa, ozon therapy', title: 'Spa & Ozon Therapy', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/spa/photo_spa_1.jpg' },
+      { key: 'Spa, ozon therapy', title: 'Spa & Ozon Therapy', image: 'https://ambiance-dev.s3.us-east-1.amazonaws.com/spa/video_spa_1.mov' },
     ];
 
     return categories.map(category => ({
@@ -81,24 +84,34 @@ export default function Services(): React.JSX.Element {
         <div className="flex flex-row gap-4 w-[3200px]">
           {serviceBlocks.map((block, blockIndex) => (
             <div key={block.title} className="p-4 flex-shrink-0">
-              <h3 className={`text-xl font-serif font-bold ${
-                theme === 'dark' 
-                  ? blockIndex === 0 ? 'text-purple-300' : blockIndex === 1 ? 'text-teal-300' : 'text-pink-300'
-                  : blockIndex === 0 ? 'text-purple-900' : blockIndex === 1 ? 'text-teal-900' : 'text-pink-900'
-              }`}>
+              <h3 className={`text-xl font-serif font-bold ${theme === 'dark' ? 'text-[#f3f4f6]' : 'text-neutral-900'}`}>
                 {block.title}
               </h3>
-              <img
-                src={block.image}
-                alt={block.title}
-                className={`w-80 h-128 mt-4 object-cover rounded-xl border ${theme === 'dark' ? 'border-[#374151]' : 'border-neutral-200'} ${
-                  blockIndex === 0 ? 'rounded-t-lg rounded-b-none' : ''
-                } ${blockIndex === 2 ? 'rounded-t-none rounded-b-lg' : ''}`}
-                loading="lazy"
-                onError={(e) => {
-                  e.currentTarget.src = `http://via.placeholder.com/320x540?text=${block.title.replace(/ /g, '+')}`;
-                }}
-              />
+              {block.image.endsWith('.mov') ? (
+                <video
+                  src={block.image}
+                  alt={block.title}
+                  className={`w-80 h-128 mt-4 object-cover rounded-xl border ${theme === 'dark' ? 'border-[#374151]' : 'border-neutral-200'}`}
+                  controls
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <img
+                  src={block.image}
+                  alt={block.title}
+                  className={`w-80 h-128 mt-4 object-cover rounded-xl border ${theme === 'dark' ? 'border-[#374151]' : 'border-neutral-200'}`}
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.src = `http://via.placeholder.com/320x540?text=${block.title.replace(/ /g, '+')}`;
+                  }}
+                />
+              )}
             </div>
           ))}
         </div>
