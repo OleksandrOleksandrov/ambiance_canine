@@ -90,7 +90,6 @@ export default function Services(): React.JSX.Element {
               {block.image.endsWith('.mov') ? (
                 <video
                   src={block.image}
-                  alt={block.title}
                   className={`w-80 h-128 mt-4 object-cover rounded-xl border ${theme === 'dark' ? 'border-[#374151]' : 'border-neutral-200'}`}
                   controls
                   autoPlay
