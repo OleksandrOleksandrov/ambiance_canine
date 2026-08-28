@@ -18,9 +18,7 @@ export default function Home() {
         <Navbar />
         {/* Theme switcher is now available in the Navbar */}
       </div>
-      <div className="mt-8">
-        <Hero />
-      </div>
+      <Hero />
       <Services />
       <PlaceSelect />
       <Gallery />
