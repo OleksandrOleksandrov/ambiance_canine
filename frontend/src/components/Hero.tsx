@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useTheme } from '../contexts/ThemeContext';
+import SocialLinks from './SocialLinks';
 
 export default function Hero(): React.JSX.Element {
   const { theme } = useTheme();
@@ -46,6 +47,9 @@ export default function Hero(): React.JSX.Element {
           >
             Explore Services
           </a>
+        </div>
+        <div className="mt-14 flex justify-center">
+          <SocialLinks />
         </div>
       </div>
     </section>
