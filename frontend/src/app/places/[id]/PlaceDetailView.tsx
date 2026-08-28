@@ -86,13 +86,17 @@ export default function PlaceDetailView({
               className={`flex items-start space-x-4 p-4 rounded-xl shadow-sm border ${cardBg}`}
             >
               <span className="text-2xl">📞</span>
-              <div>
+              <div className="w-full">
                 <p className={`text-sm font-medium ${textMuted}`}>Contact</p>
-                <div className="flex flex-wrap gap-x-2 mt-1">
+                <div className="mt-1 space-y-1">
                   {place.phone_number.map((phone) => (
-                    <span key={phone} className={heading}>
+                    <a
+                      key={phone}
+                      href={`tel:${phone}`}
+                      className={`block ${heading} hover:underline`}
+                    >
                       {phone}
-                    </span>
+                    </a>
                   ))}
                 </div>
               </div>
