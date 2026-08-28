@@ -4,6 +4,7 @@ import React from 'react';
 import { Lottie } from 'lottie-react';
 import dogPawAnimation from '../assets/dog-paw-walk.json';
 import { useTheme } from '../contexts/ThemeContext';
+import { BRAND_NAME } from '../constants/strings';
 
 function ThemeToggle(): React.JSX.Element {
   const { theme, toggleTheme } = useTheme();
@@ -89,7 +90,7 @@ export default function Navbar(): React.JSX.Element {
             <Lottie src={dogPawAnimation} loop={true} autoplay={true} style={{ width: 24, height: 24, filter: theme === 'dark' ? 'brightness(0) invert(1)' : 'brightness(0)' }} />
             <div>
               <h1 className={`${theme === 'dark' ? 'text-[#f3f4f6]' : 'text-neutral-900'} text-lg font-bold tracking-tight leading-none`}>
-                L'Éden des Animaux
+                {BRAND_NAME}
               </h1>
               <p className={`${theme === 'dark' ? 'text-[#f59e0b]' : 'text-amber-600'} font-medium tracking-wide text-xs mt-0.5`}>
                 {theme === 'dark' ? 'PARADISE' : 'PARADISE DES'} ANIMAUX

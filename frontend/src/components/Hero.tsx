@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useTheme } from '../contexts/ThemeContext';
+import { BRAND_NAME } from '../constants/strings';
 import SocialLinks from './SocialLinks';
 
 export default function Hero(): React.JSX.Element {
@@ -25,11 +26,18 @@ export default function Hero(): React.JSX.Element {
   return (
     <section className={`bg-gradient-to-b ${theme === 'dark' ? 'from-[#171717] to-[#0a0a0a]' : 'from-amber-50 to-neutral-50'} py-12 md:py-16`}>
       <div className="max-w-4xl mx-auto text-center px-4">
+        <div className="mb-8 flex justify-center">
+          <img
+            src="https://ambiance-dev.s3.us-east-1.amazonaws.com/logo/photo_ambiance_logo.jpg"
+            alt="Ambiance Canine Logo"
+            className="h-32 w-32 md:h-40 md:w-40 rounded-full object-cover border-4 border-amber-400 shadow-lg"
+          />
+        </div>
         <span className={`${badgeClasses} mb-4 inline-block`}>
           Personal Stylist for Dogs
         </span>
         <h1 className={`text-4xl md:text-6xl font-serif font-extrabold tracking-tight leading-tight mb-6 ${h1Color}`}>
-          Ambiance Canine &amp; Paradise des Animaux
+          {BRAND_NAME}
         </h1>
         <p className={`text-lg md:text-xl max-w-2xl mx-auto mb-8 ${pColor}`}>
           Professional grooming, specialized teeth brushing, and relaxing ozone spa therapy crafted for your beloved pet in Cagnes-sur-Mer.

@@ -5,7 +5,7 @@ export const places: Place[] = [
     id: '1',
     title: 'Cagnes-sur-Mer',
     place: 'Cagnes-sur-Mer',
-    phone_number: ['+33 4 93 00 00 00'],
+    phone_number: ['+33 4 93 20 71 94'],
     photos: [
       'https://ambiance-dev.s3.us-east-1.amazonaws.com/saloon/image_place_nice_1.jpg',
       'https://ambiance-dev.s3.us-east-1.amazonaws.com/saloon/image_place_nice_2.jpg',
