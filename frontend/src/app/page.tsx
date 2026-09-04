@@ -3,6 +3,7 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
+import Certificates from '../components/Certificates';
 import Services from '../components/Services';
 import PlaceSelect from '../components/PlaceSelect';
 import Gallery from '../components/Gallery';
@@ -19,6 +20,7 @@ export default function Home() {
         {/* Theme switcher is now available in the Navbar */}
       </div>
       <Hero />
+      <Certificates />
       <Services />
       <PlaceSelect />
       <Gallery />
