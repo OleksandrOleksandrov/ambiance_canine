@@ -59,13 +59,14 @@ export default function Certificates(): React.JSX.Element {
               style={{ transform: `translateX(-${activeIndex * 100}%)` }}
             >
               {certificates.map((certificate) => (
-                <div key={certificate.src} className="relative w-full shrink-0 aspect-video bg-neutral-200">
+                <div key={certificate.src} className="relative w-full shrink-0 bg-neutral-200">
                   <Image
                     src={certificate.src}
                     alt={certificate.alt}
-                    fill
+                    width={1024}
+                    height={1024}
                     sizes="(max-width: 1024px) 100vw, 1024px"
-                    className="w-full h-full object-cover"
+                    className="w-full h-auto"
                   />
                 </div>
               ))}
