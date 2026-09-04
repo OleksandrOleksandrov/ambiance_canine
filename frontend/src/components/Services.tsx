@@ -21,7 +21,8 @@ export default function Services(): React.JSX.Element {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [designImageIndex, setDesignImageIndex] = useState(1);
-  const mobileMediaHeight = '600px';
+  const mobileMediaHeight = '100svh';
+  const mediaWrapperClassName = 'w-screen relative left-1/2 -translate-x-1/2 h-[var(--mobile-height)] md:static md:w-full md:translate-x-0 md:h-[512px] mt-4';
 
   useEffect(() => {
     fetch('http://localhost:8000/api/services')
@@ -99,43 +100,45 @@ export default function Services(): React.JSX.Element {
               <h3 className={`text-xl font-serif font-bold ${theme === 'dark' ? 'text-[#f3f4f6]' : 'text-neutral-900'}`}>
                 {block.title}
               </h3>
-              {block.image.endsWith('.mov') ? (
-                <video
-                  src={block.image}
-                  className={`w-full h-[var(--mobile-height)] md:w-full md:h-[512px] mt-4 object-cover rounded-xl border ${theme === 'dark' ? 'border-[#374151]' : 'border-neutral-200'}`}
-                  style={{ '--mobile-height': mobileMediaHeight } as React.CSSProperties}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-              ) : block.afterImage ? (
-                <BeforeAfterComparison
-                  beforeImage={block.image}
-                  afterImage={block.afterImage}
-                  beforeLabel="Before"
-                  afterLabel="After"
-                  className="w-full h-[var(--mobile-height)] md:w-full md:h-[512px] mt-4 object-cover rounded-xl"
-                  style={{ '--mobile-height': mobileMediaHeight } as React.CSSProperties}
-                  autoPlay
-                  autoPlayInterval={6000}
-                  fadeDuration={1500}
-                />
-              ) : (
-                <img
-                  src={block.image}
-                  alt={block.title}
-                  className={`w-full h-[var(--mobile-height)] md:w-full md:h-[512px] mt-4 object-cover rounded-xl border ${theme === 'dark' ? 'border-[#374151]' : 'border-neutral-200'}`}
-                  style={{ '--mobile-height': mobileMediaHeight } as React.CSSProperties}
-                  loading="lazy"
-                  onError={(e) => {
-                    e.currentTarget.src = `http://via.placeholder.com/320x540?text=${block.title.replace(/ /g, '+')}`;
-                  }}
-                />
-              )}
+              <div
+                className={mediaWrapperClassName}
+                style={{ '--mobile-height': mobileMediaHeight } as React.CSSProperties}
+              >
+                {block.image.endsWith('.mov') ? (
+                  <video
+                    src={block.image}
+                    className="w-full h-full object-cover md:rounded-xl"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                ) : block.afterImage ? (
+                  <BeforeAfterComparison
+                    beforeImage={block.image}
+                    afterImage={block.afterImage}
+                    beforeLabel="Before"
+                    afterLabel="After"
+                    className="w-full h-full !rounded-none md:!rounded-xl"
+                    autoPlay
+                    autoPlayInterval={6000}
+                    fadeDuration={1500}
+                  />
+                ) : (
+                  <img
+                    src={block.image}
+                    alt={block.title}
+                    className="w-full h-full object-cover md:rounded-xl"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.src = `http://via.placeholder.com/320x540?text=${block.title.replace(/ /g, '+')}`;
+                    }}
+                  />
+                )}
+              </div>
             </div>
           ))}
         </div>

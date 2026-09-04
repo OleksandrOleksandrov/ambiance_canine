@@ -1,7 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import Link from "next/link";
+import lightGallery from 'lightgallery';
+import lgZoom from 'lightgallery/plugins/zoom';
+import 'lightgallery/css/lightgallery.css';
+import 'lightgallery/css/lg-zoom.css';
 import { Place, Groomer } from "../../../types/index";
 import { useTheme } from "../../../contexts/ThemeContext";
 
@@ -36,30 +40,48 @@ export default function PlaceDetailView({
     .map((g) => groomers.find((full) => full.id === g.id))
     .filter((g): g is NonNullable<typeof g> => Boolean(g));
 
+  const galleryRef = useRef<HTMLDivElement>(null);
+  const lightGalleryInstance = useRef<ReturnType<typeof lightGallery> | null>(null);
+
+  useEffect(() => {
+    const galleryElement = galleryRef.current;
+
+    if (galleryElement && !lightGalleryInstance.current) {
+      const gallery = lightGallery(galleryElement, {
+        plugins: [lgZoom],
+        speed: 500,
+        download: false,
+        zoomFromOrigin: false,
+        addClass: "place-gallery",
+      });
+      lightGalleryInstance.current = gallery;
+
+      return () => {
+        gallery.destroy();
+        lightGalleryInstance.current = null;
+      };
+    }
+  }, []);
+
   return (
     <main className={`min-h-screen ${pageBg}`}>
-      <div className="max-w-6xl mx-auto px-4 py-16">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         <Link
           href="/"
-          className={`inline-flex items-center gap-2 text-sm font-medium ${backLink} transition mb-8`}
+          className={`inline-flex items-center gap-2 text-sm font-medium ${backLink} transition mb-0`}
         >
           <span aria-hidden>←</span>
           <span>Back</span>
         </Link>
 
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h1 className={`text-5xl font-serif font-bold mb-4 ${heading}`}>
             {place.title}
           </h1>
-          <span
-            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${badgeBg}`}
-          >
-            {place.place === "Main Salon" ? "Salon" : "Mobile Service"}
-          </span>
         </div>
 
         {/* Header image */}
-        <div className="relative h-80 rounded-3xl overflow-hidden shadow-xl mb-12">
+        <div className="relative h-100 rounded-3xl overflow-hidden shadow-xl mb-12">
           {place.photos.length > 0 && (
             <img
               src={place.photos[0]}
@@ -76,9 +98,20 @@ export default function PlaceDetailView({
               className={`flex items-start space-x-4 p-4 rounded-xl shadow-sm border ${cardBg}`}
             >
               <span className="text-2xl">📍</span>
-              <div>
-                <p className={`text-sm font-medium ${textMuted}`}>Address</p>
-                <p className={heading}>{place.address}</p>
+              <div className="w-full">
+                <div>
+                  <p className={`text-sm font-medium ${textMuted}`}>Address</p>
+                  <p className={heading}>{place.address}</p>
+                </div>
+                <a
+                  href={place.addressLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`mt-3 ml-auto flex w-fit items-center justify-center gap-2 px-4 py-2 ${buttonBg} rounded-lg text-sm font-medium transition`}
+                >
+                  <span>🗺️</span>
+                  <span>View on Google Maps</span>
+                </a>
               </div>
             </div>
 
@@ -115,6 +148,45 @@ export default function PlaceDetailView({
                 </div>
               </div>
             )}
+            {/* Available groomers */}
+            <div
+              className={`rounded-3xl p-8 shadow-sm border ${cardBg}`}
+            >
+              <h2
+                className={`text-3xl font-serif font-bold text-center mb-8 ${heading}`}
+              >
+                Available Groomers
+              </h2>
+              {availableGroomers.length > 0 ? (
+                <div className="flex flex-col gap-4">
+                  {availableGroomers.map((groomer) => (
+                    <div
+                      key={groomer.id}
+                      className={`flex items-center space-x-4 p-4 rounded-xl ${cardBgSoft}`}
+                    >
+                      {groomer.photo && (
+                        <img
+                          src={groomer.photo}
+                          alt={groomer.name}
+                          className="w-16 h-16 rounded-full object-cover border-2 border-amber-300"
+                        />
+                      )}
+                      <div>
+                        <h3 className={`font-semibold ${heading}`}>{groomer.name}</h3>
+                        <p className={`text-xs mt-1 ${textMuted}`}>
+                          Works at {groomer.placesIds.length}{" "}
+                          {groomer.placesIds.length === 1 ? "location" : "locations"}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className={`text-center ${textMuted}`}>
+                  No groomers are currently assigned to this location.
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Gallery */}
@@ -126,67 +198,23 @@ export default function PlaceDetailView({
             >
               Gallery
             </h3>
-            <div className="grid grid-cols-2 gap-3">
-              {place.photos.slice(0, 4).map((photo) => (
-                <img
+            <div ref={galleryRef} className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {place.photos.map((photo) => (
+                <a
                   key={photo}
-                  src={photo}
-                  alt={place.title}
-                  className="w-full h-32 object-cover rounded-lg hover:opacity-90 transition cursor-pointer"
-                  loading="lazy"
-                />
-              ))}
-            </div>
-            <a
-              href={place.addressLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`inline-flex items-center justify-center w-full gap-2 px-6 py-3 mt-6 ${buttonBg} rounded-lg font-medium transition`}
-            >
-              <span>🗺️</span>
-              <span>View on Google Maps</span>
-            </a>
-          </div>
-        </div>
-
-        {/* Available groomers */}
-        <div
-          className={`rounded-3xl p-8 shadow-sm border ${cardBg}`}
-        >
-          <h2
-            className={`text-3xl font-serif font-bold text-center mb-8 ${heading}`}
-          >
-            Available Groomers
-          </h2>
-          {availableGroomers.length > 0 ? (
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {availableGroomers.map((groomer) => (
-                <div
-                  key={groomer.id}
-                  className={`flex items-center space-x-4 p-4 rounded-xl ${cardBgSoft}`}
+                  href={photo}
+                  className="block overflow-hidden rounded-lg aspect-square"
                 >
-                  {groomer.photo && (
-                    <img
-                      src={groomer.photo}
-                      alt={groomer.name}
-                      className="w-16 h-16 rounded-full object-cover border-2 border-amber-300"
-                    />
-                  )}
-                  <div>
-                    <h3 className={`font-semibold ${heading}`}>{groomer.name}</h3>
-                    <p className={`text-xs mt-1 ${textMuted}`}>
-                      Works at {groomer.placesIds.length}{" "}
-                      {groomer.placesIds.length === 1 ? "location" : "locations"}
-                    </p>
-                  </div>
-                </div>
+                  <img
+                    src={photo}
+                    alt={place.title}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                </a>
               ))}
             </div>
-          ) : (
-            <p className={`text-center ${textMuted}`}>
-              No groomers are currently assigned to this location.
-            </p>
-          )}
+          </div>
         </div>
       </div>
     </main>
