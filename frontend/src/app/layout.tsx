@@ -5,7 +5,7 @@ import { BRAND_NAME } from '../constants/strings';
 
 export const metadata = {
   title: BRAND_NAME,
-  description: 'Dog Stylist and Spa Services in Cagnes-sur-Mer',
+  description: 'Dog Stylist in France',
 };
 
 export default function RootLayout({
