@@ -200,88 +200,85 @@ export default function Certificates(): React.JSX.Element {
             Give a moment of care and relaxation.
           </p>
         </div>
+      </div>
 
-        <div className="relative">
-          <div
-            className="embla overflow-hidden rounded-2xl shadow-lg"
-            ref={emblaRef}
-          >
-            <div className="embla__container flex">
-              {certificates.map((certificate, index) => (
-                <div
-                  key={certificate.src}
-                  className={`embla__slide relative shrink-0 basis-[80%] md:basis-[55%] px-2 md:px-3 ${index === 0 ? 'ml-[10%] md:ml-[22.5%]' : ''} ${index === certificates.length - 1 ? 'mr-[10%] md:mr-[22.5%]' : ''}`}
-                >
-                  <div className="relative bg-neutral-200 rounded-xl overflow-hidden">
-                    <Image
-                      src={certificate.src}
-                      alt={certificate.alt}
-                      width={1024}
-                      height={1024}
-                      sizes="(max-width: 768px) 80vw, 55vw"
-                      className="w-full h-auto"
-                      draggable={false}
-                    />
-                  </div>
+      <div className="relative">
+        <div className="embla overflow-hidden" ref={emblaRef}>
+          <div className="embla__container flex">
+            {certificates.map((certificate, index) => (
+              <div
+                key={certificate.src}
+                className={`embla__slide relative shrink-0 basis-[80%] md:basis-[55%] px-2 md:px-3 ${index === 0 ? 'ml-[10%] md:ml-[22.5%]' : ''} ${index === certificates.length - 1 ? 'mr-[10%] md:mr-[22.5%]' : ''}`}
+              >
+                <div className="relative bg-neutral-200 rounded-xl overflow-hidden">
+                  <Image
+                    src={certificate.src}
+                    alt={certificate.alt}
+                    width={1024}
+                    height={1024}
+                    sizes="(max-width: 768px) 80vw, 55vw"
+                    className="w-full h-auto"
+                    draggable={false}
+                  />
                 </div>
-              ))}
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className={`embla__button embla__button--prev absolute left-3 top-1/2 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full shadow-md transition hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-40 disabled:cursor-not-allowed ${isDark ? 'bg-black/65 text-white hover:bg-black/80' : 'bg-white/90 text-neutral-800 hover:bg-white'}`}
-            onClick={onPrevButtonClick}
-            disabled={prevBtnDisabled}
-          >
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              className="h-5 w-5 fill-none stroke-current stroke-2"
-            >
-              <path
-                d="m15 18-6-6 6-6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          <button
-            type="button"
-            className={`embla__button embla__button--next absolute right-3 top-1/2 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full shadow-md transition hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-40 disabled:cursor-not-allowed ${isDark ? 'bg-black/65 text-white hover:bg-black/80' : 'bg-white/90 text-neutral-800 hover:bg-white'}`}
-            onClick={onNextButtonClick}
-            disabled={nextBtnDisabled}
-          >
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              className="h-5 w-5 fill-none stroke-current stroke-2"
-            >
-              <path
-                d="m9 18 6-6-6-6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
-
-        <div className="embla__controls mt-4 flex flex-col items-center gap-2">
-          <div
-            className="embla__dots flex justify-center gap-2"
-            aria-label="Certificate slides"
-          >
-            {scrollSnaps.map((_, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={() => onDotButtonClick(index)}
-                className={`embla__dot h-2.5 rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${index === selectedIndex ? 'w-7 bg-amber-500' : isDark ? 'w-2.5 bg-[#4b5563] hover:bg-[#6b7280]' : 'w-2.5 bg-neutral-300 hover:bg-neutral-400'}`}
-              />
+              </div>
             ))}
           </div>
-          <div className="embla__live-region sr-only" aria-live="polite" />
         </div>
+
+        <button
+          type="button"
+          className={`embla__button embla__button--prev absolute left-3 top-1/2 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full shadow-md transition hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-40 disabled:cursor-not-allowed ${isDark ? 'bg-black/65 text-white hover:bg-black/80' : 'bg-white/90 text-neutral-800 hover:bg-white'}`}
+          onClick={onPrevButtonClick}
+          disabled={prevBtnDisabled}
+        >
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            className="h-5 w-5 fill-none stroke-current stroke-2"
+          >
+            <path
+              d="m15 18-6-6 6-6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          type="button"
+          className={`embla__button embla__button--next absolute right-3 top-1/2 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full shadow-md transition hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-40 disabled:cursor-not-allowed ${isDark ? 'bg-black/65 text-white hover:bg-black/80' : 'bg-white/90 text-neutral-800 hover:bg-white'}`}
+          onClick={onNextButtonClick}
+          disabled={nextBtnDisabled}
+        >
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            className="h-5 w-5 fill-none stroke-current stroke-2"
+          >
+            <path
+              d="m9 18 6-6-6-6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div className="embla__controls mt-4 flex flex-col items-center gap-2">
+        <div
+          className="embla__dots flex justify-center gap-2"
+          aria-label="Certificate slides"
+        >
+          {scrollSnaps.map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              onClick={() => onDotButtonClick(index)}
+              className={`embla__dot h-2.5 rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${index === selectedIndex ? 'w-7 bg-amber-500' : isDark ? 'w-2.5 bg-[#4b5563] hover:bg-[#6b7280]' : 'w-2.5 bg-neutral-300 hover:bg-neutral-400'}`}
+            />
+          ))}
+        </div>
+        <div className="embla__live-region sr-only" aria-live="polite" />
       </div>
     </section>
   );
