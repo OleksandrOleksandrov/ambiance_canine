@@ -230,13 +230,13 @@ export default function Certificates(): React.JSX.Element {
                 key={certificate.src}
                 className="embla__slide relative shrink-0 basis-[80%] md:basis-[55%] px-2 md:px-3"
               >
-                <div className="relative bg-neutral-200 rounded-xl overflow-hidden aspect-[4/3] flex items-center justify-center">
+                <div className="relative bg-neutral-200 rounded-xl overflow-hidden aspect-[3/2] flex items-center justify-center">
                   <Image
                     src={certificate.src}
                     alt={certificate.alt}
-                    width={1024}
-                    height={768}
-                    sizes="(max-width: 768px) 80vw, 55vw"
+                    width={1280}
+                    height={853}
+                    sizes="(max-width: 853px, max-height: 1280px) 80vw, 55vw"
                     className="w-full h-full object-cover"
                     draggable={false}
                   />
