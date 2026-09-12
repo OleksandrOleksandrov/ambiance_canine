@@ -51,3 +51,13 @@ variable "root_domain" {
   type        = string
   default     = ""
 }
+
+variable "dynamodb_billing_mode" {
+  description = "Billing mode for DynamoDB tables (PROVISIONED or PAY_PER_REQUEST)"
+  type        = string
+  default     = "PAY_PER_REQUEST"
+  validation {
+    condition     = contains(["PAY_PER_REQUEST", "PROVISIONED"], var.dynamodb_billing_mode)
+    error_message = "DynamoDB billing mode must be PAY_PER_REQUEST or PROVISIONED."
+  }
+}

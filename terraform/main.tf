@@ -16,6 +16,157 @@ locals {
   }
 }
 
+# DynamoDB tables for non-relational content storage
+resource "aws_dynamodb_table" "places" {
+  name           = "${local.name_prefix}-places"
+  billing_mode   = var.dynamodb_billing_mode
+  hash_key       = "id"
+  stream_enabled = false
+  tags           = local.common_tags
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+
+  attribute {
+    name = "status"
+    type = "S"
+  }
+
+  attribute {
+    name = "sort_key"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name            = "ActiveOrderedIndex"
+    hash_key        = "status"
+    range_key       = "sort_key"
+    projection_type = "ALL"
+  }
+}
+
+resource "aws_dynamodb_table" "groomers" {
+  name           = "${local.name_prefix}-groomers"
+  billing_mode   = var.dynamodb_billing_mode
+  hash_key       = "id"
+  stream_enabled = false
+  tags           = local.common_tags
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+
+  attribute {
+    name = "status"
+    type = "S"
+  }
+
+  attribute {
+    name = "sort_key"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name            = "ActiveOrderedIndex"
+    hash_key        = "status"
+    range_key       = "sort_key"
+    projection_type = "ALL"
+  }
+}
+
+resource "aws_dynamodb_table" "services" {
+  name           = "${local.name_prefix}-services"
+  billing_mode   = var.dynamodb_billing_mode
+  hash_key       = "id"
+  stream_enabled = false
+  tags           = local.common_tags
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+
+  attribute {
+    name = "status"
+    type = "S"
+  }
+
+  attribute {
+    name = "sort_key"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name            = "ActiveOrderedIndex"
+    hash_key        = "status"
+    range_key       = "sort_key"
+    projection_type = "ALL"
+  }
+}
+
+resource "aws_dynamodb_table" "gallery_photos" {
+  name           = "${local.name_prefix}-gallery-photos"
+  billing_mode   = var.dynamodb_billing_mode
+  hash_key       = "id"
+  stream_enabled = false
+  tags           = local.common_tags
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+
+  attribute {
+    name = "status"
+    type = "S"
+  }
+
+  attribute {
+    name = "sort_key"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name            = "ActiveOrderedIndex"
+    hash_key        = "status"
+    range_key       = "sort_key"
+    projection_type = "ALL"
+  }
+}
+
+resource "aws_dynamodb_table" "certificates" {
+  name           = "${local.name_prefix}-certificates"
+  billing_mode   = var.dynamodb_billing_mode
+  hash_key       = "id"
+  stream_enabled = false
+  tags           = local.common_tags
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+
+  attribute {
+    name = "status"
+    type = "S"
+  }
+
+  attribute {
+    name = "sort_key"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name            = "ActiveOrderedIndex"
+    hash_key        = "status"
+    range_key       = "sort_key"
+    projection_type = "ALL"
+  }
+}
+
 # S3 bucket for conversation memory
 resource "aws_s3_bucket" "memory" {
   bucket = "${local.name_prefix}-memory-${data.aws_caller_identity.current.account_id}"
@@ -119,29 +270,117 @@ resource "aws_iam_role_policy_attachment" "lambda_s3" {
   role       = aws_iam_role.lambda_role.name
 }
 
+# IAM policy for Lambda to access DynamoDB tables
+resource "aws_iam_role_policy" "lambda_dynamodb" {
+  name = "${local.name_prefix}-lambda-dynamodb-policy"
+  role = aws_iam_role.lambda_role.name
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:Query",
+          "dynamodb:Scan",
+          "dynamodb:PutItem",
+          "dynamodb:BatchGetItem",
+          "dynamodb:BatchWriteItem",
+          "dynamodb:DeleteItem",
+        ]
+        Resource = [
+          aws_dynamodb_table.places.arn,
+          "${aws_dynamodb_table.places.arn}/index/*",
+          aws_dynamodb_table.groomers.arn,
+          "${aws_dynamodb_table.groomers.arn}/index/*",
+          aws_dynamodb_table.services.arn,
+          "${aws_dynamodb_table.services.arn}/index/*",
+          aws_dynamodb_table.gallery_photos.arn,
+          "${aws_dynamodb_table.gallery_photos.arn}/index/*",
+          aws_dynamodb_table.certificates.arn,
+          "${aws_dynamodb_table.certificates.arn}/index/*",
+        ]
+      },
+    ]
+  })
+}
+
 # Lambda function
 resource "aws_lambda_function" "api" {
-  filename         = "${path.module}/../backend/lambda-deployment.zip"
+  filename         = "${path.module}/../backend/lambda-api-deployment.zip"
   function_name    = "${local.name_prefix}-api"
   role             = aws_iam_role.lambda_role.arn
   handler          = "lambda_handler.handler"
-  source_code_hash = filebase64sha256("${path.module}/../backend/lambda-deployment.zip")
+  source_code_hash = filebase64sha256("${path.module}/../backend/lambda-api-deployment.zip")
   runtime          = "python3.12"
-  architectures    = ["x86_64"]
+  architectures    = ["arm64"]
   timeout          = var.lambda_timeout
   tags             = local.common_tags
+  publish          = true
+
+  snap_start {
+    apply_on = "PublishedVersions"
+  }
 
   environment {
     variables = {
-      CORS_ORIGINS     = var.use_custom_domain ? "https://${var.root_domain},https://www.${var.root_domain}" : "https://${aws_cloudfront_distribution.main.domain_name}"
-      S3_BUCKET        = aws_s3_bucket.memory.id
-      USE_S3           = "true"
-      BEDROCK_MODEL_ID = var.bedrock_model_id
+      CORS_ORIGINS                = var.use_custom_domain ? "https://${var.root_domain},https://www.${var.root_domain}" : "https://${aws_cloudfront_distribution.main.domain_name}"
+      S3_BUCKET                   = aws_s3_bucket.memory.id
+      USE_S3                      = "true"
+      BEDROCK_MODEL_ID            = var.bedrock_model_id
+      DYNAMODB_TABLE_PLACES       = aws_dynamodb_table.places.name
+      DYNAMODB_TABLE_GROOMERS     = aws_dynamodb_table.groomers.name
+      DYNAMODB_TABLE_SERVICES     = aws_dynamodb_table.services.name
+      DYNAMODB_TABLE_GALLERY      = aws_dynamodb_table.gallery_photos.name
+      DYNAMODB_TABLE_CERTIFICATES = aws_dynamodb_table.certificates.name
     }
   }
 
-  # Ensure Lambda waits for the distribution to exist
-  depends_on = [aws_cloudfront_distribution.main]
+  depends_on = [
+    aws_cloudfront_distribution.main,
+    aws_dynamodb_table.places,
+    aws_dynamodb_table.groomers,
+    aws_dynamodb_table.services,
+    aws_dynamodb_table.gallery_photos,
+    aws_dynamodb_table.certificates,
+    aws_iam_role_policy.lambda_dynamodb,
+  ]
+}
+
+resource "aws_lambda_function" "db_setup" {
+  filename         = "${path.module}/../backend/lambda-db-setup-deployment.zip"
+  function_name    = "${local.name_prefix}-db-setup"
+  role             = aws_iam_role.lambda_role.arn
+  handler          = "seed_db.lambda_handler"
+  source_code_hash = filebase64sha256("${path.module}/../backend/lambda-db-setup-deployment.zip")
+  runtime          = "python3.12"
+  architectures    = ["arm64"]
+  timeout          = 120
+  tags             = local.common_tags
+  publish          = true
+
+  snap_start {
+    apply_on = "PublishedVersions"
+  }
+
+  environment {
+    variables = {
+      DYNAMODB_TABLE_PLACES       = aws_dynamodb_table.places.name
+      DYNAMODB_TABLE_GROOMERS     = aws_dynamodb_table.groomers.name
+      DYNAMODB_TABLE_SERVICES     = aws_dynamodb_table.services.name
+      DYNAMODB_TABLE_GALLERY      = aws_dynamodb_table.gallery_photos.name
+      DYNAMODB_TABLE_CERTIFICATES = aws_dynamodb_table.certificates.name
+    }
+  }
+
+  depends_on = [
+    aws_dynamodb_table.places,
+    aws_dynamodb_table.groomers,
+    aws_dynamodb_table.services,
+    aws_dynamodb_table.gallery_photos,
+    aws_dynamodb_table.certificates,
+    aws_iam_role_policy.lambda_dynamodb,
+  ]
 }
 
 # API Gateway HTTP API
@@ -174,7 +413,7 @@ resource "aws_apigatewayv2_stage" "default" {
 resource "aws_apigatewayv2_integration" "lambda" {
   api_id           = aws_apigatewayv2_api.main.id
   integration_type = "AWS_PROXY"
-  integration_uri  = aws_lambda_function.api.invoke_arn
+  integration_uri  = aws_lambda_function.api.qualified_arn
 }
 
 # API Gateway Routes
@@ -184,9 +423,33 @@ resource "aws_apigatewayv2_route" "get_root" {
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 
-resource "aws_apigatewayv2_route" "post_chat" {
+resource "aws_apigatewayv2_route" "get_services" {
   api_id    = aws_apigatewayv2_api.main.id
-  route_key = "POST /chat"
+  route_key = "GET /api/services"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "get_places" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "GET /api/places"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "get_place" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "GET /api/places/{place_id}"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "get_gallery" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "GET /api/gallery"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+}
+
+resource "aws_apigatewayv2_route" "get_certificates" {
+  api_id    = aws_apigatewayv2_api.main.id
+  route_key = "GET /api/certificates"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 
@@ -201,6 +464,7 @@ resource "aws_lambda_permission" "api_gw" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.api.function_name
+  qualifier     = aws_lambda_function.api.version
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.main.execution_arn}/*/*"
 }
@@ -208,7 +472,7 @@ resource "aws_lambda_permission" "api_gw" {
 # CloudFront distribution
 resource "aws_cloudfront_distribution" "main" {
   aliases = local.aliases
-  
+
   viewer_certificate {
     acm_certificate_arn            = var.use_custom_domain ? aws_acm_certificate.site[0].arn : null
     cloudfront_default_certificate = var.use_custom_domain ? false : true

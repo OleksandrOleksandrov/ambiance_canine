@@ -1,364 +1,388 @@
 <h1 style="margin: 0; font-size: 2em;">Ambiance Canine — L'Éden des Animaux</h1>
-<p style="margin-top: 8px;">A premium dog grooming salon website with locations in <strong>Cagnes-sur-Mer</strong> and <strong>Nice, France</strong>. Built with Next.js 15, React 19, TypeScript, and Tailwind CSS v4.</p>
+<p style="margin-top: 8px;">A premium dog grooming salon website with locations in <strong>Cagnes-sur-Mer</strong> and <strong>Nice, France</strong>. The application uses Next.js 16, React 19, TypeScript, Tailwind CSS v4, FastAPI, and Amazon DynamoDB on AWS.</p>
 
 ---
 
-## 🌐 Environments
-
-We're live across multiple environments:
+## Environments
 
 | Environment | URL | Description |
 |-------------|-----|-------------|
-| **🌟 Production** | https://d1r3btwzyaa7pg.cloudfront.net | The reliable gold standard |
-| **🧪 Staging** | https://dk0gm769iduok.cloudfront.net | Where we polish the rough edges |
-| **🛠️ Development** | https://d28y4aqu1ibh05.cloudfront.net | Our experimental playground |
+| **Production** | https://d1r3btwzyaa7pg.cloudfront.net | Current production deployment |
+| **Staging** | https://dk0gm769iduok.cloudfront.net | Pre-production deployment |
+| **Development** | https://d28y4aqu1ibh05.cloudfront.net | Development deployment |
 
-## 🌟 Overview
+## Overview
 
-**Ambiance Canine** (brand name: *L'Éden des Animaux*) is a professional dog grooming service offering personalized care for your beloved pets. The website showcases services, locations, team members, and provides an elegant booking experience.
+**Ambiance Canine** (brand name: *L'Éden des Animaux*) provides professional dog grooming, dental care, and ozone spa services. The frontend is a statically exported Next.js application backed by a FastAPI content API.
 
 ### Key Features
 
-- **Multi-location support** — Cagnes-sur-Mer & Nice, France
-- **Three service categories** — Creative Design, Dental Care, Spa & Ozone Therapy
-- **Team profiles** — Professional groomers with photos and assignments
-- **Dark/Light theme** — Full theme switching with persistence
-- **Responsive design** — Mobile-first, works beautifully on all devices
-- **Image galleries** — Before/after comparisons, salon photos, team photos
-- **Location finder** — Interactive cards with Google Maps integration
-- **Authentication ready** — Clerk integration for future user accounts
+- Database-backed service categories, service details, media, locations, groomers, gallery photos, and gift certificates (Amazon DynamoDB)
+- Location cards and detail pages for Cagnes-sur-Mer and Nice
+- Before/after comparisons, image galleries, and service videos
+- Responsive layouts with persistent dark/light theme switching
+- Gift certificate carousel and certificate listing page
+- Static export suitable for S3 and CloudFront hosting
+- AWS Lambda API deployment with DynamoDB
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Frontend
+
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| Next.js | 15.3.0 | React framework with App Router |
+| Next.js | 16.3.0 | React framework with App Router and static export |
 | React | 19.2.8 | UI library |
 | TypeScript | 5.x | Type safety |
 | Tailwind CSS | 4.x | Utility-first styling |
-| Clerk | 6.39.0 | Authentication |
-| Embla Carousel | 9.x | Carousel/slider component |
-| LightGallery | 2.9.0 | Image gallery lightbox |
-| Lottie React | 3.1.0 | Animations |
+| Embla Carousel | 9.x | Certificate carousel |
+| LightGallery | 2.9.0 | Image gallery and lightbox |
+| Lottie React | 3.1.0 | Animated logo |
 
-### Backend (API)
+### Backend
+
 | Technology | Purpose |
 |------------|---------|
-| FastAPI | High-performance Python API |
-| OpenAI | GPT-5-nano for AI-powered consultation summaries |
-| Clerk Auth | JWT validation for API protection |
+| FastAPI | Content and health API |
+| DynamoDB | Places, groomers, services, gallery, certificates (non-relational) |
+| boto3 | AWS SDK for Python (DynamoDB access) |
+| Mangum | FastAPI adapter for AWS Lambda |
 
-### Infrastructure & DevOps
+### Infrastructure and Operations
+
 | Tool | Purpose |
 |------|---------|
 | Terraform | AWS infrastructure as code |
-| Vercel/CloudFront | Global CDN deployment |
-| GitHub Actions | CI/CD pipelines |
-| AWS S3 | Image/video asset storage |
+| AWS S3 | Frontend and media asset storage |
+| AWS CloudFront | Global CDN for the static frontend |
+| AWS Lambda | FastAPI API and database setup workers |
+| AWS API Gateway | HTTP API routes for Lambda |
+| AWS DynamoDB | Non-relational tables for places, groomers, services, gallery, certificates |
+| GitHub Actions | Deployment workflow |
 
 ---
 
-## 📦 Project Structure
+## Project Structure
 
-```
+```text
 ambiance_canine/
-├── api/                      # FastAPI backend
-│   └── index.py             # AI consultation summary endpoint
-├── frontend/                 # Next.js frontend application
+├── backend/
+│   ├── main.py                 # FastAPI routes
+│   ├── db.py                   # DynamoDB queries and table configuration
+│   ├── seed_data.py            # Initial content records
+│   ├── seed_db.py              # Idempotent DynamoDB seeding and db_setup Lambda handler
+│   ├── lambda_handler.py       # Mangum API Lambda entrypoint
+│   └── deploy.py               # Lambda package builder
+├── frontend/
 │   ├── src/
-│   │   ├── app/             # Next.js App Router pages
-│   │   │   ├── page.tsx     # Home page
-│   │   │   ├── layout.tsx   # Root layout
-│   │   │   ├── globals.css  # Global styles
-│   │   │   └── places/      # Location detail pages
-│   │   ├── components/      # React components
-│   │   │   ├── Hero.tsx           # Landing hero section
-│   │   │   ├── Services.tsx       # Services showcase
-│   │   │   ├── PlaceSelect.tsx    # Location cards
-│   │   │   ├── PlaceDetailView.tsx# Location detail page
-│   │   │   ├── Gallery.tsx        # Image gallery
-│   │   │   ├── Certificates.tsx   # Certifications display
-│   │   │   ├── Navbar.tsx         # Navigation bar
-│   │   │   ├── Footer.tsx         # Site footer
-│   │   │   ├── BeforeAfterComparison.tsx
-│   │   │   └── SocialLinks.tsx    # Social media links
-│   │   ├── contexts/        # React contexts
-│   │   │   └── ThemeContext.tsx   # Dark/light theme management
-│   │   ├── data/            # Static data
-│   │   │   └── mockPlaces.ts      # Salon locations & team data
-│   │   ├── types/           # TypeScript definitions
-│   │   │   └── index.ts           # Core type definitions
-│   │   └── constants/       # App constants
-│   │       └── strings.ts         # Brand name, copy
-│   ├── public/              # Static assets
+│   │   ├── app/
+│   │   │   ├── page.tsx        # Home page
+│   │   │   ├── layout.tsx      # Root layout and metadata
+│   │   │   ├── globals.css     # Global styles
+│   │   │   ├── places/
+│   │   │   │   └── [id]/       # Generated location detail pages
+│   │   │   └── certificates/   # Gift certificate listing
+│   │   ├── components/         # Services, locations, galleries, navigation, and footer
+│   │   ├── contexts/           # Theme provider
+│   │   ├── lib/api.ts          # Typed API client
+│   │   ├── types/index.ts      # Shared API types
+│   │   ├── constants/          # Application constants
+│   │   └── assets/             # Frontend animation assets
 │   ├── package.json
 │   ├── tsconfig.json
 │   └── next.config.ts
-├── terraform/               # AWS infrastructure
-│   ├── main.tf             # Main Terraform config
-│   ├── variables.tf        # Input variables
-│   ├── outputs.tf          # Output values
-│   ├── backend.tf          # State backend config
-│   ├── prod.tfvars         # Production variables
-│   └── versions.tf         # Provider versions
-├── scripts/                # Utility scripts
-│   ├── deploy.sh           # Deployment script
-│   ├── run_local.py        # Local development runner
-│   └── destroy.sh          # Infrastructure teardown
-├── .github/workflows/      # CI/CD pipelines
-│   ├── deploy.yml          # Deploy workflow
-│   └── destroy.yml         # Destroy workflow
-├── package.json            # Root package.json (monorepo)
-├── tsconfig.json           # Root TypeScript config
-├── eslint.config.mjs       # ESLint configuration
-└── README.md               # This file
+├── scripts/
+│   ├── deploy.sh               # Build and deploy all environments
+│   ├── setup_db.py             # Create DynamoDB tables and seed content
+│   ├── run_local.py            # Legacy local process runner
+│   └── destroy.sh              # Infrastructure teardown
+├── terraform/                  # AWS resources and environment workspaces
+├── .github/workflows/          # Deploy and destroy workflows
+├── package.json                # Root package metadata
+├── tsconfig.json               # Root TypeScript configuration
+├── eslint.config.mjs           # ESLint configuration
+└── README.md
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- Node.js 20+
-- Python 3.11+ (for API)
-- pnpm / npm / yarn
-- AWS CLI configured (for deployment)
-- Terraform 1.5+ (for infrastructure)
+- Node.js 20 or newer
+- npm
+- Python 3.11 or newer
+- Docker for building the Lambda package
+- AWS CLI, Terraform, and AWS credentials for deployment
+- Docker (for DynamoDB Local during local development)
 
-### Installation
+### Install Dependencies
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd ambiance_canine
-
-# Install frontend dependencies
+# Frontend
 cd frontend
-npm install
+npm ci
 
-# Install API dependencies (in separate terminal)
-cd ../api
-pip install -r requirements.txt  # Create requirements.txt from imports
+# API
+cd ../backend
+python3 -m pip install -r requirements.txt
 ```
 
 ### Environment Variables
 
-Create `.env.local` in `frontend/`:
+Create `frontend/.env.local`:
 
 ```env
-# Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxx
-CLERK_SECRET_KEY=sk_test_xxx
-CLERK_JWKS_URL=https://xxx.clerk.accounts.dev/.well-known/jwks.json
-
-# API
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-Create `.env` in `api/`:
+Create a `backend/.env` file for local API development, or export the same variables in the shell running the API:
 
 ```env
-CLERK_JWKS_URL=https://xxx.clerk.accounts.dev/.well-known/jwks.json
-OPENAI_API_KEY=sk-xxx
+DYNAMODB_ENDPOINT_URL=http://localhost:8001
+DYNAMODB_TABLE_PLACES=ambiancecanine-dev-places
+DYNAMODB_TABLE_GROOMERS=ambiancecanine-dev-groomers
+DYNAMODB_TABLE_SERVICES=ambiancecanine-dev-services
+DYNAMODB_TABLE_GALLERY=ambiancecanine-dev-gallery-photos
+DYNAMODB_TABLE_CERTIFICATES=ambiancecanine-dev-certificates
+CORS_ORIGINS=http://localhost:3000
 ```
 
-### Development
+Use `DYNAMODB_ENDPOINT_URL=http://localhost:8001` to point at a local DynamoDB instance. Omit this variable in production; the Lambda functions resolve tables via environment variables set by Terraform. See [Database Setup](#database-setup) for seeding instructions.
+
+### Run Locally
+
+Start the frontend and API in separate terminals:
 
 ```bash
-# Terminal 1: Start frontend (from frontend/)
+# Terminal 1: frontend
+cd frontend
 npm run dev
 
-# Terminal 2: Start API (from api/)
-python -m uvicorn index:app --reload --port 8000
-
-# Terminal 3: Run local infra (optional)
-python scripts/run_local.py
+# Terminal 2: API
+cd ../backend
+python -m uvicorn main:app --reload --port 8000
 ```
 
-Visit `http://localhost:3000` for the frontend and `http://localhost:8000/docs` for API docs.
+Open `http://localhost:3000` for the frontend and `http://localhost:8000/docs` for API documentation.
 
 ---
 
-### Deploy to Production
+## Database Setup
+
+Content is stored in Amazon DynamoDB. Initial content records are defined in `backend/seed_data.py` and applied by `backend/seed_db.py`.
+
+The tables store:
+
+- Places, phone numbers, photos, and groomer assignments (denormalized — each place embeds its `groomer_ids`)
+- Groomer profiles with their `place_ids`
+- Service categories with media and service details
+- Gallery photos and gift certificates
+
+Each table uses a sparse global secondary index (`ActiveOrderedIndex`) with `status = "active"` as the partition key and a composite `sort_key` (`{display_order:010d}#{id}`) as the range key. This enables efficient queries for all active items in display order without table scans.
+
+### Local Database
+
+Start a local DynamoDB instance (e.g., via Docker) and set the endpoint URL:
 
 ```bash
-# Using the deploy script
-./scripts/deploy.sh prod
-
-# Or via GitHub Actions
-git push origin main  # Triggers deploy workflow
+docker run -d -p 8001:8000 amazon/dynamodb-local
 ```
 
-### Destroy Infrastructure
+Set the local environment variables and run the setup script from the repository root:
+
+```bash
+export DYNAMODB_ENDPOINT_URL=http://localhost:8001
+export DYNAMODB_TABLE_PLACES=ambiancecanine-dev-places
+export DYNAMODB_TABLE_GROOMERS=ambiancecanine-dev-groomers
+export DYNAMODB_TABLE_SERVICES=ambiancecanine-dev-services
+export DYNAMODB_TABLE_GALLERY=ambiancecanine-dev-gallery-photos
+export DYNAMODB_TABLE_CERTIFICATES=ambiancecanine-dev-certificates
+
+python3 scripts/setup_db.py
+```
+
+`setup_db.py` creates the DynamoDB tables (if they do not already exist), waits for them to become active, and seeds the content.
+
+To seed existing tables without creating new ones:
+
+```bash
+cd backend
+python seed_db.py
+```
+
+### Cloud Database
+
+Each Terraform environment creates five DynamoDB tables (places, groomers, services, gallery photos, and certificates) with on-demand billing and an `ActiveOrderedIndex` GSI. Lambda functions access DynamoDB tables via environment variables set by Terraform — no Secrets Manager or VPC is required.
+
+Deployment is straightforward — no database password is needed:
+
+```bash
+./scripts/deploy.sh prod
+```
+
+Useful Terraform outputs are:
+
+```bash
+terraform output -raw dynamodb_table_places
+terraform output -raw dynamodb_table_groomers
+terraform output -raw dynamodb_table_services
+terraform output -raw dynamodb_table_gallery_photos
+terraform output -raw dynamodb_table_certificates
+```
+
+---
+
+## Database Structure
+
+Each content entity is stored in its own DynamoDB table. Tables are provisioned by Terraform; item structure mirrors the original relational schema with denormalization to avoid joins.
+
+### Entity-Relationship Diagram (denormalized)
+
+```
+places ── groomer_ids ──┐
+                        ├── groomers ── place_ids ──┐
+                        └──────────────────┘       │
+                                                     └──┘
+(M:N relationship embedded as lists on each entity — no junction table needed)
+
+services (standalone, includes media list)
+
+gallery_photos (standalone)
+
+certificates (standalone)
+```
+
+### Tables
+
+| Table | Primary Key | Purpose | Key Attributes |
+|-------|-------------|---------|----------------|
+| **places** | `id` (String, slug) | Salon locations | `slug`, `title`, `place`, `address`, `address_link`, `places_called`, `phone_number` (list), `photos` (list), `groomer_ids` (list), `display_order`, `is_active` |
+| **groomers** | `id` (String, slug) | Groomer profiles | `slug`, `name`, `photo`, `specialty`, `place_ids` (list), `display_order`, `is_active` |
+| **services** | `id` (String, slug) | Service categories with media | `slug`, `title`, `subtitle`, `description`, `icon`, `image_url`, `after_image_url`, `media_type`, `image_folder`, `media` (list), `display_order`, `is_active` |
+| **gallery_photos** | `id` (String) | Gallery images | `name`, `alt_text`, `photo_url`, `display_order`, `is_active` |
+| **certificates** | `id` (String) | Gift certificates | `src`, `alt`, `description`, `locale`, `display_order`, `is_active` |
+
+### Indexes (GSI on every table)
+
+| Index | Partition Key | Sort Key | Purpose |
+|-------|---------------|----------|---------|
+| `ActiveOrderedIndex` | `status` = `"active"` (sparse) | `sort_key` = `{display_order:010d}#{id}` | Efficient query of all active items in display order |
+
+### Notes
+
+- **Sparse index**: Only items with `status = "active"` appear in the GSI, so inactive items are excluded automatically.
+- **Denormalization**: Each place stores `groomer_ids` (list of groomer slugs); each groomer stores `place_ids` (list of place slugs). This eliminates the need for a junction table and reduces read queries to a single GSI query plus a `BatchGetItem`.
+- **Soft deletes**: All tables use `is_active` boolean flags; the sparse GSI ensures only active items are returned.
+- **Display ordering**: All content tables include `display_order` for manual sorting, embedded in the `sort_key` for ordered GSI queries.
+- **Timestamps**: Most tables have `created_at` and `updated_at` (ISO 8601).
+
+---
+
+## Content Model
+
+Content is stored in DynamoDB tables and fetched by the frontend through the API. The former mock place and certificate modules are no longer used as data sources.
+
+Update `backend/seed_data.py` to change the initial dataset, then run `scripts/setup_db.py` or the `db_setup` Lambda. Seeding is idempotent for places, groomers, and services; gallery photos and certificates are replaced with the current seed set.
+
+Location detail routes are generated from the API response at build time under `/places/{id}/`.
+
+---
+
+## API
+
+The FastAPI application exposes these endpoints:
+
+### Content
+
+- `GET /api/places` returns `{ places, groomers }`
+- `GET /api/places/{place_id}` returns one location
+- `GET /api/services` returns service categories with media
+- `GET /api/gallery` returns `{ images }`
+- `GET /api/certificates` returns `{ certificates }`
+
+### Health
+
+- `GET /health` checks DynamoDB connectivity
+- `GET /` returns API service metadata
+
+The API uses `CORS_ORIGINS` to configure browser access. Content endpoints are currently readable without authentication; protect write endpoints before exposing them to untrusted clients if authentication is required.
+
+---
+
+## Deployment
+
+`scripts/deploy.sh` performs the following steps:
+
+1. Builds the Lambda package with the AWS Python 3.12 runtime image.
+2. Initializes the Terraform S3 backend and selects the requested workspace.
+3. Applies the environment-specific Terraform configuration.
+4. Invokes the database setup Lambda.
+5. Builds the Next.js static export with `NEXT_PUBLIC_API_URL` set to the deployed API Gateway URL.
+6. Syncs the export to the environment S3 bucket.
+
+Supported environments are `dev`, `test`, and `prod`:
+
+```bash
+./scripts/deploy.sh dev
+./scripts/deploy.sh test
+./scripts/deploy.sh prod
+```
+
+To remove an environment's infrastructure:
 
 ```bash
 ./scripts/destroy.sh prod
-# Or via GitHub Actions: workflow_dispatch on destroy.yml
 ```
 
 ---
 
-## 🎨 Services Offered
+## Validation
 
-### 1. Holiday, Design & Creativity
-*Creative grooming with artistic flair — perfect for special occasions*
-- Breed-standard cuts
-- Creative styling & coloring
-- Holiday-themed designs
-- Show preparation
+Run frontend linting and TypeScript validation from `frontend/`:
 
-### 2. Teeth Brushing
-*Professional dental hygiene for optimal oral health*
-- Ultrasonic scaling
-- Polishing & fluoride treatment
-- Before/after comparison
-- Home care guidance
-
-### 3. Spa & Ozone Therapy
-*Deep cleanse and healing bath with ozone technology*
-- Ozonated hydrotherapy
-- Skin condition treatment
-- Relaxation & stress relief
-- Therapeutic benefits for allergies, dermatitis
-
----
-
-## 🏢 Locations
-
-### Cagnes-sur-Mer
-- **Address:** 64 Bd Maréchal Juin, 06800 Cagnes-sur-Mer
-- **Phone:** +33 4 93 20 71 94
-- **Team:** Oleksandr, Natasha
-- [View on Google Maps](https://www.google.com/maps/search/?api=1&query=64+Bd+Marechal+Juin,+06800+Cages-sur-Mer)
-
-### Nice
-- **Address:** 5 Rue Vernier, 06000 Nice
-- **Phone:** +33 9 81 98 37 34 / +33 7 68 22 46 54
-- **Team:** Oleksandr, Natasha
-- [View on Google Maps](https://www.google.com/maps/search/?api=1&query=5+Rue+Vernier,+06000+Nice)
-
----
-
-## 👥 Team
-
-| Groomer | Locations | Specialty |
-|---------|-----------|-----------|
-| **Oleksandr** | Cagnes-sur-Mer, Nice | Creative Design, Show Grooming |
-| **Natasha** | Cagnes-sur-Mer, Nice | Dental Care, Spa Therapy |
-
----
-
-## 🔧 API Endpoints
-
-### POST `/api`
-Generates AI-powered consultation summaries for veterinary visits.
-
-**Request:**
-```json
-{
-  "patient_name": "Buddy",
-  "date_of_visit": "2024-01-15",
-  "notes": "Patient presented with..."
-}
-```
-
-**Response:** Server-sent events stream with three sections:
-1. Summary for doctor's records
-2. Next steps for the doctor
-3. Draft email to patient
-
-**Authentication:** Requires Clerk JWT token via `Authorization: Bearer <token>`
-
----
-
-## 📝 Available Scripts
-
-### Frontend (from `frontend/`)
 ```bash
-npm run dev      # Start development server
-npm run build    # Production build
-npm run start    # Start production server
-npm run lint     # Run ESLint
+cd frontend
+npm run lint
+npx tsc --noEmit
 ```
 
-### Root (monorepo)
+The production build requires the API to be reachable at `NEXT_PUBLIC_API_URL` because location routes are generated from API data:
+
 ```bash
-npm run dev      # Same as frontend dev
-npm run build    # Same as frontend build
-npm run start    # Same as frontend start
-npm run lint     # Same as frontend lint
+npm run build
+```
+
+Run a Python syntax check from the repository root:
+
+```bash
+python3 -m compileall backend scripts
+```
+
+No automated test files or test runner script are currently configured in the repository. Use `npm test --if-present` to run a test command if one is added later.
+
+Terraform validation requires an initialized backend and environment workspace:
+
+```bash
+cd terraform
+terraform init
+terraform workspace select dev
+terraform validate
 ```
 
 ---
 
-## 🏗 Infrastructure (Terraform)
+## Infrastructure
 
-The `terraform/` directory contains AWS infrastructure:
+The `terraform/` directory provisions:
 
-- **S3 Buckets** — Asset storage (images, videos)
-- **CloudFront Distributions** — Global CDN for each environment
-- **Route53** — DNS management (if configured)
-- **ACM Certificates** — SSL/TLS for custom domains
+- S3 buckets for the frontend and application assets
+- CloudFront distributions for static delivery
+- DynamoDB tables for places, groomers, services, gallery photos, and certificates
+- Lambda functions for the API and database setup
+- API Gateway HTTP API routes
 
-### Key Files
-- `main.tf` — Core resources
-- `variables.tf` — Configurable inputs
-- `prod.tfvars` — Production-specific values
-- `backend.tf` — Remote state configuration (S3 + DynamoDB)
-
----
-
-## 🔐 Authentication
-
-Uses **Clerk** for authentication:
-- User sign-up/sign-in
-- JWT token management
-- Protected API routes
-- Organization support (future)
-
-Configuration in `frontend/src/app/layout.tsx` with `<ClerkProvider>`.
-
----
-
-## 🎯 Roadmap
-
-- [ ] Online booking system with calendar integration
-- [ ] Customer portal with visit history
-- [ ] Loyalty program & rewards
-- [ ] Multi-language support (French/English)
-- [ ] Mobile app (React Native)
-- [ ] Inventory & product sales
-- [ ] Automated appointment reminders (SMS/Email)
-
----
-
-## 📄 License
-
-Private project — All rights reserved.
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
-## 📞 Contact
-
-**Ambiance Canine — L'Éden des Animaux**
-- Website: [Production](https://d1r3btwzyaa7pg.cloudfront.net)
-- Email: Contact via website form
-- Locations: Cagnes-sur-Mer & Nice, France
-
----
-
-*Built with ❤️ for dogs and their humans*
+Environment-specific values are stored in `terraform.tfvars`, `test.tfvars`, and `prod.tfvars`. Sensitive values should be supplied through environment variables or CI secrets rather than committed Terraform variable files.

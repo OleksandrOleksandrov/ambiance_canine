@@ -1,23 +1,53 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useTheme } from '../../contexts/ThemeContext';
-import { certificates } from '../../data/certificates';
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "../../contexts/ThemeContext";
+import { fetchApi } from "../../lib/api";
+import type { CertificatesData, Certificate } from "../../types";
 
 export default function CertificatesDetailView(): React.JSX.Element {
   const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const isDark = theme === "dark";
+  const [certificates, setCertificates] = useState<Certificate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const pageBg = isDark ? 'bg-[#0a0a0a] text-[#ededed]' : 'bg-neutral-50 text-neutral-800';
-  const sectionBg = isDark ? 'bg-[#111827]' : 'bg-neutral-100';
-  const heading = isDark ? 'text-[#f3f4f6]' : 'text-neutral-900';
-  const textMuted = isDark ? 'text-[#9ca3af]' : 'text-neutral-500';
-  const cardBg = isDark ? 'bg-[#18181b] border-neutral-800' : 'bg-white border-neutral-200';
+  useEffect(() => {
+    let active = true;
+    const loadCertificates = async () => {
+      try {
+        const data = await fetchApi<CertificatesData>("/api/certificates");
+        if (active) setCertificates(data.certificates);
+      } catch (err) {
+        if (active) {
+          setError(
+            err instanceof Error ? err.message : "Unable to load certificates."
+          );
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    loadCertificates();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const pageBg = isDark
+    ? "bg-[#0a0a0a] text-[#ededed]"
+    : "bg-neutral-50 text-neutral-800";
+  const sectionBg = isDark ? "bg-[#111827]" : "bg-neutral-100";
+  const heading = isDark ? "text-[#f3f4f6]" : "text-neutral-900";
+  const textMuted = isDark ? "text-[#9ca3af]" : "text-neutral-500";
+  const cardBg = isDark
+    ? "bg-[#18181b] border-neutral-800"
+    : "bg-white border-neutral-200";
   const backLink = isDark
-    ? 'text-[#fbbf24] hover:text-amber-300'
-    : 'text-amber-700 hover:text-amber-800';
+    ? "text-[#fbbf24] hover:text-amber-300"
+    : "text-amber-700 hover:text-amber-800";
 
   return (
     <main className={`min-h-screen ${pageBg}`}>
@@ -32,7 +62,9 @@ export default function CertificatesDetailView(): React.JSX.Element {
           </Link>
 
           <div className="text-center mb-8 md:mb-10">
-            <h1 className={`text-4xl md:text-5xl font-serif font-bold ${heading}`}>
+            <h1
+              className={`text-4xl md:text-5xl font-serif font-bold ${heading}`}
+            >
               Gift Certificates
             </h1>
             <p className={`mt-3 text-lg ${textMuted}`}>
@@ -40,33 +72,37 @@ export default function CertificatesDetailView(): React.JSX.Element {
             </p>
           </div>
 
-          <div className="grid gap-6 md:gap-8">
-            {certificates.map((certificate) => (
-              <div
-                key={certificate.id}
-                className={`flex flex-col md:flex-row items-center gap-6 md:gap-8 p-4 md:p-6 rounded-2xl shadow-sm border ${cardBg}`}
-              >
-                <div className="relative w-full md:w-2/5 shrink-0 aspect-[3/2] rounded-xl overflow-hidden bg-neutral-200">
-                  <Image
-                    src={certificate.src}
-                    alt={certificate.alt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 40vw"
-                    className="object-cover"
-                    draggable={false}
-                  />
+          {loading && <p className={`text-center ${textMuted}`}>Loading certificates...</p>}
+          {error && <p className="text-center text-red-600">{error}</p>}
+          {!loading && !error && (
+            <div className="grid gap-6 md:gap-8">
+              {certificates.map((certificate) => (
+                <div
+                  key={certificate.id}
+                  className={`flex flex-col md:flex-row items-center gap-6 md:gap-8 p-4 md:p-6 rounded-2xl shadow-sm border ${cardBg}`}
+                >
+                  <div className="relative w-full md:w-2/5 shrink-0 aspect-[3/2] rounded-xl overflow-hidden bg-neutral-200">
+                    <Image
+                      src={certificate.src}
+                      alt={certificate.alt}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 40vw"
+                      className="object-cover"
+                      draggable={false}
+                    />
+                  </div>
+                  <div className="w-full md:w-3/5">
+                    <h2 className={`text-2xl font-semibold ${heading}`}>
+                      {certificate.alt}
+                    </h2>
+                    <p className={`mt-2 leading-relaxed ${textMuted}`}>
+                      {certificate.description}
+                    </p>
+                  </div>
                 </div>
-                <div className="w-full md:w-3/5">
-                  <h2 className={`text-2xl font-semibold ${heading}`}>
-                    {certificate.alt}
-                  </h2>
-                  <p className={`mt-2 leading-relaxed ${textMuted}`}>
-                    {certificate.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </main>

@@ -6,17 +6,15 @@ import lightGallery from 'lightgallery';
 import lgZoom from 'lightgallery/plugins/zoom';
 import 'lightgallery/css/lightgallery.css';
 import 'lightgallery/css/lg-zoom.css';
-import { Place, Groomer } from "../../../types/index";
+import { Place } from "../../../types/index";
 import { useTheme } from "../../../contexts/ThemeContext";
 
 interface PlaceDetailViewProps {
   place: Place;
-  groomers: Groomer[];
 }
 
 export default function PlaceDetailView({
   place,
-  groomers,
 }: PlaceDetailViewProps) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -30,15 +28,12 @@ export default function PlaceDetailView({
   const cardBgSoft = isDark ? "bg-[#1f2937]" : "bg-neutral-50";
   const heading = isDark ? "text-white" : "text-neutral-900";
   const textMuted = isDark ? "text-[#6b7280]" : "text-neutral-500";
-  const badgeBg = isDark ? "bg-[#374151] text-[#fbbf24]" : "bg-amber-100 text-amber-800";
   const backLink = isDark ? "text-[#fbbf24] hover:text-amber-300" : "text-amber-700 hover:text-amber-800";
   const buttonBg = isDark
     ? "bg-[#f59e0b] hover:bg-[#fbbf24] text-black"
     : "bg-amber-600 hover:bg-amber-700 text-white";
 
-  const availableGroomers = place.groomers
-    .map((g) => groomers.find((full) => full.id === g.id))
-    .filter((g): g is NonNullable<typeof g> => Boolean(g));
+  const availableGroomers = place.groomers;
 
   const galleryRef = useRef<HTMLDivElement>(null);
   const lightGalleryInstance = useRef<ReturnType<typeof lightGallery> | null>(null);
@@ -103,15 +98,17 @@ export default function PlaceDetailView({
                   <p className={`text-sm font-medium ${textMuted}`}>Address</p>
                   <p className={heading}>{place.address}</p>
                 </div>
-                <a
-                  href={place.addressLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`mt-3 ml-auto flex w-fit items-center justify-center gap-2 px-4 py-2 ${buttonBg} rounded-lg text-sm font-medium transition`}
-                >
-                  <span>🗺️</span>
-                  <span>View on Google Maps</span>
-                </a>
+                {place.addressLink && (
+                  <a
+                    href={place.addressLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`mt-3 ml-auto flex w-fit items-center justify-center gap-2 px-4 py-2 ${buttonBg} rounded-lg text-sm font-medium transition`}
+                  >
+                    <span>🗺️</span>
+                    <span>View on Google Maps</span>
+                  </a>
+                )}
               </div>
             </div>
 

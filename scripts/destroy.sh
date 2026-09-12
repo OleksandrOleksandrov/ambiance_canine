@@ -22,6 +22,7 @@ cd "$(dirname "$0")/../terraform"
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 AWS_REGION=${DEFAULT_AWS_REGION:-us-east-1}
 
+# No DB_PASSWORD needed for DynamoDB
 # Initialize terraform with S3 backend
 echo "🔧 Initializing Terraform with S3 backend..."
 terraform init -input=false \
@@ -44,7 +45,7 @@ terraform workspace select "$ENVIRONMENT"
 
 echo "📦 Emptying S3 buckets..."
 
-# Get bucket names with account ID (matching Day 4 naming)
+# Get bucket names with account ID (matching naming convention)
 FRONTEND_BUCKET="${PROJECT_NAME}-${ENVIRONMENT}-frontend-${AWS_ACCOUNT_ID}"
 MEMORY_BUCKET="${PROJECT_NAME}-${ENVIRONMENT}-memory-${AWS_ACCOUNT_ID}"
 
@@ -66,18 +67,38 @@ fi
 
 echo "🔥 Running terraform destroy..."
 
-# Create a dummy lambda zip if it doesn't exist (needed for destroy in GitHub Actions)
-if [ ! -f "../backend/lambda-deployment.zip" ]; then
-    echo "Creating dummy lambda package for destroy operation..."
-    echo "dummy" | zip ../backend/lambda-deployment.zip -
-fi
+# Create dummy Lambda zips if they don't exist (needed for destroy in GitHub Actions)
+for lambda_zip in lambda-api-deployment.zip lambda-db-setup-deployment.zip; do
+  if [ ! -f "../backend/$lambda_zip" ]; then
+    echo "Creating dummy Lambda package for destroy operation: $lambda_zip"
+    echo "dummy" | zip "../backend/$lambda_zip" -
+  fi
+done
 
-# Run terraform destroy with auto-approve
-if [ "$ENVIRONMENT" = "prod" ] && [ -f "prod.tfvars" ]; then
-    terraform destroy -var-file=prod.tfvars -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
-else
-    terraform destroy -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
-fi
+# Run terraform destroy with auto-approve using environment-specific tfvars
+case "$ENVIRONMENT" in
+  prod)
+    if [ -f "prod.tfvars" ]; then
+      terraform destroy -var-file=prod.tfvars -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
+    else
+      terraform destroy -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
+    fi
+    ;;
+  test)
+    if [ -f "test.tfvars" ]; then
+      terraform destroy -var-file=test.tfvars -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
+    else
+      terraform destroy -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
+    fi
+    ;;
+  *)
+    if [ -f "terraform.tfvars" ]; then
+      terraform destroy -var-file=terraform.tfvars -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
+    else
+      terraform destroy -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
+    fi
+    ;;
+esac
 
 echo "✅ Infrastructure for ${ENVIRONMENT} has been destroyed!"
 echo ""
