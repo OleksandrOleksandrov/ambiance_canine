@@ -2,34 +2,12 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import useEmblaCarousel from 'embla-carousel-react';
 import Accessibility from 'embla-carousel-accessibility';
 import type { EmblaCarouselType } from 'embla-carousel';
 import { useTheme } from '../contexts/ThemeContext';
-
-type Certificate = {
-  src: string;
-  alt: string;
-};
-
-const certificates: Certificate[] = [
-  {
-    src: 'https://ambiance-s3.s3.us-east-1.amazonaws.com/certificates/untitled+folder/image_certificate_spa_ozon_rf.jpg',
-    alt: 'Ozone spa gift certificate',
-  },
-  {
-    src: 'https://ambiance-s3.s3.us-east-1.amazonaws.com/certificates/untitled+folder/image_certificate_50_euro_gift_fr.jpg',
-    alt: '50 euro gift certificate',
-  },
-  {
-    src: 'https://ambiance-s3.s3.us-east-1.amazonaws.com/certificates/untitled+folder/image_certificate_spa_ozon.jpg',
-    alt: 'Ozone spa gift certificate',
-  },
-  {
-    src: 'https://ambiance-s3.s3.us-east-1.amazonaws.com/certificates/untitled+folder/image_certificate_50_euro_gift.jpg',
-    alt: '50 euro gift certificate',
-  },
-];
+import { certificates } from '../data/certificates';
 
 const useDotButton = (
   emblaApi: EmblaCarouselType | undefined
@@ -226,22 +204,28 @@ export default function Certificates(): React.JSX.Element {
         <div className="embla overflow-hidden" ref={emblaRef}>
           <div className="embla__container flex items-center">
             {certificates.map((certificate) => (
-              <div
-                key={certificate.src}
-                className="embla__slide relative shrink-0 basis-[80%] md:basis-[55%] px-2 md:px-3"
-              >
-                <div className="relative bg-neutral-200 rounded-xl overflow-hidden aspect-[3/2] flex items-center justify-center">
-                  <Image
-                    src={certificate.src}
-                    alt={certificate.alt}
-                    width={1280}
-                    height={853}
-                    sizes="(max-width: 853px, max-height: 1280px) 80vw, 55vw"
-                    className="w-full h-full object-cover"
-                    draggable={false}
-                  />
+                <div
+                  key={certificate.id}
+                  className="embla__slide relative shrink-0 basis-[80%] md:basis-[55%] px-2 md:px-3"
+                >
+                  <Link
+                    href="/certificates"
+                    className="group block rounded-xl overflow-hidden"
+                    aria-label={`View all gift certificates`}
+                  >
+                    <div className="relative bg-neutral-200 rounded-xl overflow-hidden aspect-[3/2] flex items-center justify-center">
+                      <Image
+                        src={certificate.src}
+                        alt={certificate.alt}
+                        width={1280}
+                        height={853}
+                        sizes="(max-width: 853px, max-height: 1280px) 80vw, 55vw"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        draggable={false}
+                      />
+                    </div>
+                  </Link>
                 </div>
-              </div>
             ))}
           </div>
         </div>
