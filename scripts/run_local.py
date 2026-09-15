@@ -106,7 +106,7 @@ def check_env_files():
 
 def start_backend():
     """Start the FastAPI backend"""
-    backend_dir = Path(__file__).parent.parent / "backend" / "api"
+    backend_dir = Path(__file__).parent.parent / "backend"
 
     print("\n🚀 Starting FastAPI backend...")
 

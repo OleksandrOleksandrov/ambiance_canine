@@ -1,4 +1,4 @@
-name: Deploy Digital Ambiance Canine
+name: Deploy Ambiance Canine
 
 on:
   push:
@@ -69,8 +69,8 @@ jobs:
           ./scripts/deploy.sh ${{ github.event.inputs.environment || 'dev' }}
         env:
           AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
-          
-      - name: Get Deployment URLs
+
+      - name: Get Deployment Outputs
         id: deploy_outputs
         working-directory: ./terraform
         run: |
@@ -78,6 +78,8 @@ jobs:
           echo "cloudfront_url=$(terraform output -raw cloudfront_url)" >> $GITHUB_OUTPUT
           echo "api_url=$(terraform output -raw api_gateway_url)" >> $GITHUB_OUTPUT
           echo "frontend_bucket=$(terraform output -raw s3_frontend_bucket)" >> $GITHUB_OUTPUT
+          echo "dynamodb_table_places=$(terraform output -raw dynamodb_table_places 2>/dev/null || echo '')" >> $GITHUB_OUTPUT
+          echo "dynamodb_table_certificates=$(terraform output -raw dynamodb_table_certificates 2>/dev/null || echo '')" >> $GITHUB_OUTPUT
 
       - name: Invalidate CloudFront
         run: |
@@ -94,6 +96,10 @@ jobs:
       - name: Deployment Summary
         run: |
           echo "✅ Deployment Complete!"
+          echo "Environment: ${{ github.event.inputs.environment || 'dev' }}"
           echo "🌐 CloudFront URL: ${{ steps.deploy_outputs.outputs.cloudfront_url }}"
           echo "📡 API Gateway: ${{ steps.deploy_outputs.outputs.api_url }}"
           echo "🪣 Frontend Bucket: ${{ steps.deploy_outputs.outputs.frontend_bucket }}"
+          if [ -n "${{ steps.deploy_outputs.outputs.dynamodb_table_places }}" ]; then
+            echo "🗄️  DynamoDB Places Table: ${{ steps.deploy_outputs.outputs.dynamodb_table_places }}"
+          fi
