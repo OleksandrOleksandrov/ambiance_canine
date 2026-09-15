@@ -29,9 +29,9 @@ share/python-wheels/
 MANIFEST
 
 # Lambda packages
-lambda-deployment.zip
-lambda-package/
-/backend/lambda-package/
+lambda-*-deployment.zip
+lambda-*-package/
+/backend/lambda-*-package/
 
 # PyInstaller
 *.manifest

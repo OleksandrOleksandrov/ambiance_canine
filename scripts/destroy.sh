@@ -67,11 +67,13 @@ fi
 
 echo "🔥 Running terraform destroy..."
 
-# Create a dummy lambda zip if it doesn't exist (needed for destroy in GitHub Actions)
-if [ ! -f "../backend/lambda-deployment.zip" ]; then
-    echo "Creating dummy lambda package for destroy operation..."
-    echo "dummy" | zip ../backend/lambda-deployment.zip -
-fi
+# Create dummy Lambda zips if they don't exist (needed for destroy in GitHub Actions)
+for lambda_zip in lambda-api-deployment.zip lambda-db-setup-deployment.zip; do
+  if [ ! -f "../backend/$lambda_zip" ]; then
+    echo "Creating dummy Lambda package for destroy operation: $lambda_zip"
+    echo "dummy" | zip "../backend/$lambda_zip" -
+  fi
+done
 
 # Run terraform destroy with auto-approve using environment-specific tfvars
 case "$ENVIRONMENT" in

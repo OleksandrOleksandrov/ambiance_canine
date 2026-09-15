@@ -11,7 +11,7 @@ const eslintConfig = defineConfig([
     "**/out/**",
     "**/build/**",
     "**/next-env.d.ts",
-    "**/lambda-package/**",
+    "**/lambda-*-package/**",
     "**/venv/**",
   ]),
 ]);

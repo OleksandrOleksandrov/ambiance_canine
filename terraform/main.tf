@@ -40,10 +40,10 @@ resource "aws_dynamodb_table" "places" {
   }
 
   global_secondary_index {
-    name               = "ActiveOrderedIndex"
-    hash_key           = "status"
-    range_key          = "sort_key"
-    projection_type    = "ALL"
+    name            = "ActiveOrderedIndex"
+    hash_key        = "status"
+    range_key       = "sort_key"
+    projection_type = "ALL"
   }
 }
 
@@ -70,10 +70,10 @@ resource "aws_dynamodb_table" "groomers" {
   }
 
   global_secondary_index {
-    name               = "ActiveOrderedIndex"
-    hash_key           = "status"
-    range_key          = "sort_key"
-    projection_type    = "ALL"
+    name            = "ActiveOrderedIndex"
+    hash_key        = "status"
+    range_key       = "sort_key"
+    projection_type = "ALL"
   }
 }
 
@@ -100,10 +100,10 @@ resource "aws_dynamodb_table" "services" {
   }
 
   global_secondary_index {
-    name               = "ActiveOrderedIndex"
-    hash_key           = "status"
-    range_key          = "sort_key"
-    projection_type    = "ALL"
+    name            = "ActiveOrderedIndex"
+    hash_key        = "status"
+    range_key       = "sort_key"
+    projection_type = "ALL"
   }
 }
 
@@ -130,10 +130,10 @@ resource "aws_dynamodb_table" "gallery_photos" {
   }
 
   global_secondary_index {
-    name               = "ActiveOrderedIndex"
-    hash_key           = "status"
-    range_key          = "sort_key"
-    projection_type    = "ALL"
+    name            = "ActiveOrderedIndex"
+    hash_key        = "status"
+    range_key       = "sort_key"
+    projection_type = "ALL"
   }
 }
 
@@ -160,10 +160,10 @@ resource "aws_dynamodb_table" "certificates" {
   }
 
   global_secondary_index {
-    name               = "ActiveOrderedIndex"
-    hash_key           = "status"
-    range_key          = "sort_key"
-    projection_type    = "ALL"
+    name            = "ActiveOrderedIndex"
+    hash_key        = "status"
+    range_key       = "sort_key"
+    projection_type = "ALL"
   }
 }
 
@@ -307,11 +307,11 @@ resource "aws_iam_role_policy" "lambda_dynamodb" {
 
 # Lambda function
 resource "aws_lambda_function" "api" {
-  filename         = "${path.module}/../backend/lambda-deployment.zip"
+  filename         = "${path.module}/../backend/lambda-api-deployment.zip"
   function_name    = "${local.name_prefix}-api"
   role             = aws_iam_role.lambda_role.arn
   handler          = "lambda_handler.handler"
-  source_code_hash = filebase64sha256("${path.module}/../backend/lambda-deployment.zip")
+  source_code_hash = filebase64sha256("${path.module}/../backend/lambda-api-deployment.zip")
   runtime          = "python3.12"
   architectures    = ["arm64"]
   timeout          = var.lambda_timeout
@@ -324,10 +324,10 @@ resource "aws_lambda_function" "api" {
 
   environment {
     variables = {
-      CORS_ORIGINS            = var.use_custom_domain ? "https://${var.root_domain},https://www.${var.root_domain}" : "https://${aws_cloudfront_distribution.main.domain_name}"
-      S3_BUCKET               = aws_s3_bucket.memory.id
-      USE_S3                  = "true"
-      BEDROCK_MODEL_ID        = var.bedrock_model_id
+      CORS_ORIGINS                = var.use_custom_domain ? "https://${var.root_domain},https://www.${var.root_domain}" : "https://${aws_cloudfront_distribution.main.domain_name}"
+      S3_BUCKET                   = aws_s3_bucket.memory.id
+      USE_S3                      = "true"
+      BEDROCK_MODEL_ID            = var.bedrock_model_id
       DYNAMODB_TABLE_PLACES       = aws_dynamodb_table.places.name
       DYNAMODB_TABLE_GROOMERS     = aws_dynamodb_table.groomers.name
       DYNAMODB_TABLE_SERVICES     = aws_dynamodb_table.services.name
@@ -348,11 +348,11 @@ resource "aws_lambda_function" "api" {
 }
 
 resource "aws_lambda_function" "db_setup" {
-  filename         = "${path.module}/../backend/lambda-deployment.zip"
+  filename         = "${path.module}/../backend/lambda-db-setup-deployment.zip"
   function_name    = "${local.name_prefix}-db-setup"
   role             = aws_iam_role.lambda_role.arn
   handler          = "seed_db.lambda_handler"
-  source_code_hash = filebase64sha256("${path.module}/../backend/lambda-deployment.zip")
+  source_code_hash = filebase64sha256("${path.module}/../backend/lambda-db-setup-deployment.zip")
   runtime          = "python3.12"
   architectures    = ["arm64"]
   timeout          = 120
@@ -365,11 +365,11 @@ resource "aws_lambda_function" "db_setup" {
 
   environment {
     variables = {
-      DYNAMODB_TABLE_PLACES         = aws_dynamodb_table.places.name
-      DYNAMODB_TABLE_GROOMERS       = aws_dynamodb_table.groomers.name
-      DYNAMODB_TABLE_SERVICES       = aws_dynamodb_table.services.name
-      DYNAMODB_TABLE_GALLERY        = aws_dynamodb_table.gallery_photos.name
-      DYNAMODB_TABLE_CERTIFICATES   = aws_dynamodb_table.certificates.name
+      DYNAMODB_TABLE_PLACES       = aws_dynamodb_table.places.name
+      DYNAMODB_TABLE_GROOMERS     = aws_dynamodb_table.groomers.name
+      DYNAMODB_TABLE_SERVICES     = aws_dynamodb_table.services.name
+      DYNAMODB_TABLE_GALLERY      = aws_dynamodb_table.gallery_photos.name
+      DYNAMODB_TABLE_CERTIFICATES = aws_dynamodb_table.certificates.name
     }
   }
 
