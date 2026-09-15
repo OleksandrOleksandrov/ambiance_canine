@@ -1,7 +1,4 @@
 fastapi
 uvicorn
-openai
-fastapi-clerk-auth
-pydantic
 mangum
 aioboto3
