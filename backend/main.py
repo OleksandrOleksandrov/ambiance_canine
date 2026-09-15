@@ -1,9 +1,11 @@
 import os
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from db import (
+    close_db,
     database_is_healthy,
     get_certificates_from_db,
     get_gallery_images_from_db,
@@ -11,6 +13,7 @@ from db import (
     get_place_from_db,
     get_places_from_db,
     get_services_from_db,
+    init_db,
 )
 
 
@@ -25,7 +28,16 @@ def cors_origins():
 
 
 origins = cors_origins()
-app = FastAPI(title="Ambiance Canine API")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db()
+    yield
+    await close_db()
+
+
+app = FastAPI(title="Ambiance Canine API", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

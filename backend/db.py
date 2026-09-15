@@ -4,16 +4,13 @@ import subprocess
 from datetime import datetime, timezone
 from typing import Any, Optional
 
-import boto3
+import aioboto3
 from boto3.dynamodb.conditions import Key
 
 _dynamodb_resource = None
 
 
-def _get_dynamodb_resource():
-    global _dynamodb_resource
-    if _dynamodb_resource is not None:
-        return _dynamodb_resource
+def _session_config():
     config = {
         "region_name": os.environ.get(
             "AWS_REGION", os.environ.get("AWS_DEFAULT_REGION", "us-east-1")
@@ -22,8 +19,7 @@ def _get_dynamodb_resource():
     endpoint_url = os.environ.get("DYNAMODB_ENDPOINT_URL")
     if endpoint_url:
         config["endpoint_url"] = endpoint_url
-    _dynamodb_resource = boto3.resource("dynamodb", **config)
-    return _dynamodb_resource
+    return config
 
 
 def _table_names():
@@ -36,19 +32,37 @@ def _table_names():
     }
 
 
-def _get_table(table_key):
-    return _get_dynamodb_resource().Table(_table_names()[table_key])
+async def _get_dynamodb_resource():
+    """Return the shared aioboto3 DynamoDB resource.
+
+    The resource is normally created and closed by the FastAPI lifespan in
+    main.py. This fallback creates a short-lived resource when the module is
+    used outside of that lifecycle (e.g. Lambda invocations via Mangum with
+    lifespan="off").
+    """
+    global _dynamodb_resource
+    if _dynamodb_resource is not None:
+        return _dynamodb_resource
+    session = aioboto3.Session()
+    ctx = session.resource("dynamodb", **_session_config())
+    _dynamodb_resource = await ctx.__aenter__()
+    return _dynamodb_resource
 
 
-def _query_active_ordered(table_key):
-    table = _get_table(table_key)
-    response = table.query(
+async def _get_table(table_key):
+    resource = await _get_dynamodb_resource()
+    return await resource.Table(_table_names()[table_key])
+
+
+async def _query_active_ordered(table_key):
+    table = await _get_table(table_key)
+    response = await table.query(
         IndexName="ActiveOrderedIndex",
         KeyConditionExpression=Key("status").eq("active"),
     )
     items = response.get("Items", [])
     while "LastEvaluatedKey" in response:
-        response = table.query(
+        response = await table.query(
             IndexName="ActiveOrderedIndex",
             KeyConditionExpression=Key("status").eq("active"),
             ExclusiveStartKey=response["LastEvaluatedKey"],
@@ -58,19 +72,19 @@ def _query_active_ordered(table_key):
     return items
 
 
-def _batch_get_keys(table_key, keys):
+async def _batch_get_keys(table_key, keys):
     if not keys:
         return []
-    resource = _get_dynamodb_resource()
-    table = resource.Table(_table_names()[table_key])
-    response = resource.batch_get_item(
+    resource = await _get_dynamodb_resource()
+    table_name = _table_names()[table_key]
+    response = await resource.batch_get_item(
         RequestItems={
-            table.name: {
+            table_name: {
                 "Keys": [{"id": k} for k in keys],
             }
         }
     )
-    return response.get("Responses", {}).get(table.name, [])
+    return response.get("Responses", {}).get(table_name, [])
 
 
 def _format_groomer(row):
@@ -149,13 +163,34 @@ def _format_certificate(row):
     }
 
 
+async def init_db():
+    """Create and cache the shared aioboto3 DynamoDB resource."""
+    global _dynamodb_resource
+    if _dynamodb_resource is not None:
+        return _dynamodb_resource
+    session = aioboto3.Session()
+    ctx = session.resource("dynamodb", **_session_config())
+    _dynamodb_resource = await ctx.__aenter__()
+    return _dynamodb_resource
+
+
+async def close_db():
+    """Close the shared aioboto3 DynamoDB resource."""
+    global _dynamodb_resource
+    if _dynamodb_resource is None:
+        return
+    await _dynamodb_resource.__aexit__(None, None, None)
+    _dynamodb_resource = None
+
+
 async def get_database_settings():
     return _table_names()
 
 
 async def database_is_healthy():
     try:
-        response = _get_table("places").query(
+        table = await _get_table("places")
+        await table.query(
             IndexName="ActiveOrderedIndex",
             KeyConditionExpression=Key("status").eq("active"),
             Limit=1,
@@ -166,11 +201,11 @@ async def database_is_healthy():
 
 
 async def get_places_from_db():
-    place_items = _query_active_ordered("places")
+    place_items = await _query_active_ordered("places")
     all_groomer_ids = set()
     for place in place_items:
         all_groomer_ids.update(place.get("groomer_ids", []))
-    groomer_items = _batch_get_keys("groomers", list(all_groomer_ids))
+    groomer_items = await _batch_get_keys("groomers", list(all_groomer_ids))
     groomer_lookup = {}
     for g in sorted(groomer_items, key=lambda x: x.get("sort_key", "")):
         groomer_lookup[g["id"]] = _format_groomer(g)
@@ -178,8 +213,8 @@ async def get_places_from_db():
 
 
 async def get_place_from_db(place_id):
-    table = _get_table("places")
-    response = table.get_item(
+    table = await _get_table("places")
+    response = await table.get_item(
         Key={"id": str(place_id)},
         ConsistentRead=True,
     )
@@ -189,7 +224,7 @@ async def get_place_from_db(place_id):
     if not item.get("is_active", False):
         return None
     groomer_ids = item.get("groomer_ids", [])
-    groomer_items = _batch_get_keys("groomers", groomer_ids)
+    groomer_items = await _batch_get_keys("groomers", groomer_ids)
     sorted_groomers = sorted(
         groomer_items, key=lambda x: x.get("sort_key", "")
     )
@@ -200,22 +235,22 @@ async def get_place_from_db(place_id):
 
 
 async def get_groomers_from_db():
-    groomer_items = _query_active_ordered("groomers")
+    groomer_items = await _query_active_ordered("groomers")
     return [_format_groomer(g) for g in groomer_items]
 
 
 async def get_services_from_db():
-    service_items = _query_active_ordered("services")
+    service_items = await _query_active_ordered("services")
     return [_format_service(s) for s in service_items]
 
 
 async def get_gallery_images_from_db():
-    photo_items = _query_active_ordered("gallery")
+    photo_items = await _query_active_ordered("gallery")
     return [_format_gallery_image(p) for p in photo_items]
 
 
 async def get_certificates_from_db():
-    cert_items = _query_active_ordered("certificates")
+    cert_items = await _query_active_ordered("certificates")
     return [_format_certificate(c) for c in cert_items]
 
 

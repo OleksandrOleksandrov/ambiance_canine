@@ -47,7 +47,7 @@
 |------------|---------|
 | FastAPI | Content and health API |
 | DynamoDB | Places, groomers, services, gallery, certificates (non-relational) |
-| boto3 | AWS SDK for Python (DynamoDB access) |
+| aioboto3 | Async AWS SDK for Python (DynamoDB access) |
 | Mangum | FastAPI adapter for AWS Lambda |
 
 ### Infrastructure and Operations

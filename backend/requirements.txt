@@ -4,4 +4,4 @@ openai
 fastapi-clerk-auth
 pydantic
 mangum
-boto3
+aioboto3
