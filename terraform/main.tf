@@ -313,7 +313,7 @@ resource "aws_lambda_function" "api" {
   handler          = "lambda_handler.handler"
   source_code_hash = filebase64sha256("${path.module}/../backend/lambda-deployment.zip")
   runtime          = "python3.12"
-  architectures    = ["x86_64"]
+  architectures    = ["arm64"]
   timeout          = var.lambda_timeout
   tags             = local.common_tags
   publish          = true
@@ -354,7 +354,7 @@ resource "aws_lambda_function" "db_setup" {
   handler          = "seed_db.lambda_handler"
   source_code_hash = filebase64sha256("${path.module}/../backend/lambda-deployment.zip")
   runtime          = "python3.12"
-  architectures    = ["x86_64"]
+  architectures    = ["arm64"]
   timeout          = 120
   tags             = local.common_tags
   publish          = true
