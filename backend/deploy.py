@@ -29,13 +29,13 @@ def main():
             "-v",
             f"{os.getcwd()}:/var/task",
             "--platform",
-            "linux/arm64",  # Build dependencies for the Lambda ARM64 runtime
+            "linux/amd64",  # Keep CI native; pip downloads ARM64 wheels below
             "--entrypoint",
             "",  # Override the default entrypoint
             "public.ecr.aws/lambda/python:3.12",
             "/bin/sh",
             "-c",
-            "pip install --target /var/task/lambda-package -r /var/task/requirements.txt --platform manylinux2014_aarch64 --only-binary=:all: --upgrade",
+            "pip install --target /var/task/lambda-package -r /var/task/requirements.txt --platform manylinux2014_aarch64 --implementation cp --python-version 3.12 --only-binary=:all: --upgrade",
         ],
         check=True,
     )
