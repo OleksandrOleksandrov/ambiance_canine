@@ -4,7 +4,7 @@ import subprocess
 from datetime import datetime, timezone
 from typing import Any, Optional
 
-import aioboto3
+from aioboto3 import Session
 from boto3.dynamodb.conditions import Key
 
 _dynamodb_resource = None
@@ -43,7 +43,7 @@ async def _get_dynamodb_resource():
     global _dynamodb_resource
     if _dynamodb_resource is not None:
         return _dynamodb_resource
-    session = aioboto3.Session()
+    session = Session()
     ctx = session.resource("dynamodb", **_session_config())
     _dynamodb_resource = await ctx.__aenter__()
     return _dynamodb_resource
@@ -168,7 +168,7 @@ async def init_db():
     global _dynamodb_resource
     if _dynamodb_resource is not None:
         return _dynamodb_resource
-    session = aioboto3.Session()
+    session = Session()
     ctx = session.resource("dynamodb", **_session_config())
     _dynamodb_resource = await ctx.__aenter__()
     return _dynamodb_resource

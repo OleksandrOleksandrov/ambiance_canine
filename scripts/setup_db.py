@@ -7,7 +7,7 @@ import sys
 import time
 from pathlib import Path
 
-import boto3
+from boto3 import client as boto3_client, resource as boto3_resource
 from botocore.exceptions import ClientError, WaiterError
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
@@ -158,7 +158,7 @@ def setup_database(region=None, endpoint_url=None):
         os.environ["DYNAMODB_ENDPOINT_URL"] = endpoint_url
 
     table_names = _table_names()
-    client = boto3.client(
+    client = boto3_client(
         "dynamodb",
         region_name=os.environ.get("AWS_DEFAULT_REGION", "us-east-1"),
         endpoint_url=endpoint_url or os.environ.get("DYNAMODB_ENDPOINT_URL"),
@@ -173,7 +173,7 @@ def setup_database(region=None, endpoint_url=None):
     if created:
         wait_for_tables(client, created)
 
-    resource = boto3.resource(
+    resource = boto3_resource(
         "dynamodb",
         region_name=os.environ.get("AWS_DEFAULT_REGION", "us-east-1"),
         endpoint_url=endpoint_url or os.environ.get("DYNAMODB_ENDPOINT_URL"),

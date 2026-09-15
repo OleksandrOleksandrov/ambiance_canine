@@ -2,7 +2,7 @@ import argparse
 import os
 from datetime import datetime, timezone
 
-import boto3
+from boto3 import resource
 
 from seed_data import SEED_DATA
 
@@ -16,7 +16,7 @@ def _get_dynamodb_resource():
     endpoint_url = os.environ.get("DYNAMODB_ENDPOINT_URL")
     if endpoint_url:
         config["endpoint_url"] = endpoint_url
-    return boto3.resource("dynamodb", **config)
+    return resource("dynamodb", **config)
 
 
 def _table_names():
