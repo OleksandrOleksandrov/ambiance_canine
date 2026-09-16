@@ -8,7 +8,7 @@
 | Environment | URL | Description |
 |-------------|-----|-------------|
 | **Production** | https://d1r3btwzyaa7pg.cloudfront.net | Current production deployment |
-| **Staging** | https://dk0gm769iduok.cloudfront.net | Pre-production deployment |
+| **Staging** | https://d1gv4iito35nhj.cloudfront.net | Pre-production deployment |
 | **Development** | https://d28y4aqu1ibh05.cloudfront.net | Development deployment |
 
 ## Overview
