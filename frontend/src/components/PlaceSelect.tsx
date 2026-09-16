@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Place, Groomer } from "../types";
-import { places as mockPlaces } from "../data/mockPlaces";
+import { Place } from "../types";
+import { fetchApi } from "../lib/api";
 import { useTheme } from "../contexts/ThemeContext";
 
 interface PlaceItemProps {
@@ -13,8 +13,6 @@ interface PlaceItemProps {
 const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-
-  // Theme-aware Tailwind styles
   const cardBg = isDark
     ? "bg-[#18181b] border-neutral-800"
     : "bg-white border-neutral-200";
@@ -47,9 +45,8 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
         }`}
       />
       <div className="grid grid-cols-1 md:grid-cols-12 min-h-[300px]">
-        {/* Photo Section */}
         <div className="relative md:col-span-5 min-h-[240px] md:min-h-full overflow-hidden">
-          {place.photos && place.photos.length > 0 ? (
+          {place.photos[0] ? (
             <img
               src={place.photos[0]}
               alt={place.title}
@@ -64,27 +61,21 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
             </div>
           )}
         </div>
-
-        {/* Content Section */}
         <div className="md:col-span-7 p-6 sm:p-8 flex flex-col justify-between gap-6">
           <div className="space-y-4">
             <h3 className="text-2xl sm:text-3xl font-serif font-bold">
               <span className={cardTitle}>{place.title}</span>
             </h3>
-
             <div className="space-y-3 text-sm">
-              {/* Address */}
               <div className="flex items-center gap-3">
                 <span
                   className={`flex items-center justify-center w-8 h-8 rounded-full ${iconBg} ${iconText} text-sm shrink-0`}
                 >
                   📍
                 </span>
-                <span className={textPrimary}>{place.address}</span>
+                <span className={textPrimary}>{place.address || place.place}</span>
               </div>
-
-              {/* Team */}
-              {place.groomers && place.groomers.length > 0 && (
+              {place.groomers.length > 0 && (
                 <div className={`flex items-center gap-3 ${textPrimary}`}>
                   <span
                     className={`flex items-center justify-center w-8 h-8 rounded-full ${iconBg} text-sm shrink-0`}
@@ -93,12 +84,10 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
                   </span>
                   <span>
                     <strong className={labelStrong}>Team:</strong>{" "}
-                    {place.groomers.map((g: Groomer) => g.name).join(", ")}
+                    {place.groomers.map((groomer) => groomer.name).join(", ")}
                   </span>
                 </div>
               )}
-
-              {/* Places Called */}
               {place.placesCalled && (
                 <div className={`flex items-center gap-3 ${textPrimary}`}>
                   <span
@@ -113,15 +102,13 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
               )}
             </div>
           </div>
-
-          {/* Location Action */}
           <div
             className={`flex flex-wrap items-center gap-3 ${
               isDark ? "mt-8" : "mt-6"
             } relative z-20`}
           >
             <a
-              href={place.addressLink}
+              href={place.addressLink || undefined}
               target="_blank"
               rel="noopener noreferrer"
               className={`inline-flex items-center gap-2 px-5 py-2.5 ${buttonBg} transition-colors text-xs font-semibold rounded-xl`}
@@ -157,8 +144,29 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
 export default function PlaceSelect() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const [places, setPlaces] = useState<Place[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    let active = true;
+    const loadPlaces = async () => {
+      try {
+        const data = await fetchApi<{ places: Place[] }>("/api/places");
+        if (active) setPlaces(data.places);
+      } catch (err) {
+        if (active) setError(err instanceof Error ? err.message : "Unable to load locations.");
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    loadPlaces();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (isDark) {
       document.documentElement.classList.add("dark");
     } else {
@@ -192,11 +200,10 @@ export default function PlaceSelect() {
             Find your preferred salon
           </p>
         </div>
-
         <div className="flex flex-col gap-8 md:gap-10">
-          {mockPlaces.map((place) => (
-            <PlaceItem key={place.id} place={place} />
-          ))}
+          {loading && <p className="text-center">Loading locations...</p>}
+          {error && <p className="text-center text-red-600">{error}</p>}
+          {!loading && !error && places.map((place) => <PlaceItem key={place.id} place={place} />)}
         </div>
       </div>
     </section>

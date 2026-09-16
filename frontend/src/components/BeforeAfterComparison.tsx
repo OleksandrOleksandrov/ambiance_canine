@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface BeforeAfterComparisonProps {
   beforeImage: string;
@@ -29,38 +29,39 @@ export default function BeforeAfterComparison({
   const animationRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
 
-  const updateOpacity = useCallback((now: number) => {
-    if (!startTimeRef.current) {
-      startTimeRef.current = now;
-    }
-
-    const elapsed = now - startTimeRef.current;
-    const cycleProgress = (elapsed % autoPlayInterval) / autoPlayInterval;
-    const fadeFraction = fadeDuration / autoPlayInterval;
-
-    let opacityValue: number;
-    if (cycleProgress < fadeFraction) {
-      const progress = cycleProgress / fadeFraction;
-      const eased = 0.5 - 0.5 * Math.cos(progress * Math.PI);
-      opacityValue = eased;
-    } else if (cycleProgress < 0.5) {
-      opacityValue = 1;
-    } else if (cycleProgress < 0.5 + fadeFraction) {
-      const progress = (cycleProgress - 0.5) / fadeFraction;
-      const eased = 0.5 - 0.5 * Math.cos(progress * Math.PI);
-      opacityValue = 1 - eased;
-    } else {
-      opacityValue = 0;
-    }
-
-    setOpacity(opacityValue);
-    animationRef.current = requestAnimationFrame(updateOpacity);
-  }, [autoPlayInterval, fadeDuration]);
-
   useEffect(() => {
     if (!autoPlay) return;
 
     startTimeRef.current = null;
+
+    const updateOpacity = (now: number) => {
+      if (!startTimeRef.current) {
+        startTimeRef.current = now;
+      }
+
+      const elapsed = now - startTimeRef.current;
+      const cycleProgress = (elapsed % autoPlayInterval) / autoPlayInterval;
+      const fadeFraction = fadeDuration / autoPlayInterval;
+
+      let opacityValue: number;
+      if (cycleProgress < fadeFraction) {
+        const progress = cycleProgress / fadeFraction;
+        const eased = 0.5 - 0.5 * Math.cos(progress * Math.PI);
+        opacityValue = eased;
+      } else if (cycleProgress < 0.5) {
+        opacityValue = 1;
+      } else if (cycleProgress < 0.5 + fadeFraction) {
+        const progress = (cycleProgress - 0.5) / fadeFraction;
+        const eased = 0.5 - 0.5 * Math.cos(progress * Math.PI);
+        opacityValue = 1 - eased;
+      } else {
+        opacityValue = 0;
+      }
+
+      setOpacity(opacityValue);
+      animationRef.current = requestAnimationFrame(updateOpacity);
+    };
+
     animationRef.current = requestAnimationFrame(updateOpacity);
 
     return () => {
@@ -68,7 +69,7 @@ export default function BeforeAfterComparison({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [autoPlay, updateOpacity]);
+  }, [autoPlay, autoPlayInterval, fadeDuration]);
 
   return (
     <div
