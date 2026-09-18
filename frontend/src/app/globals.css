@@ -174,9 +174,18 @@ body {
     font-style: italic;
   }
   [data-theme="dark"] .markdown-content hr,
-  [data-theme="light"] .markdown-content hr {
+   [data-theme="light"] .markdown-content hr {
     border: 0;
     border-top: 1px solid #e5e7eb;
     margin: 2em 0;
+  }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
   }
 }

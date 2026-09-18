@@ -5,6 +5,7 @@ import { ServiceCategory } from "../types";
 import { useTheme } from "../contexts/ThemeContext";
 import { fetchApi } from "../lib/api";
 import BeforeAfterComparison from "./BeforeAfterComparison";
+import { ServiceCardSkeleton } from "./Skeleton";
 
 interface ServiceBlock {
   title: string;
@@ -115,13 +116,11 @@ export default function Services(): React.JSX.Element {
           </p>
         </div>
         {loading && (
-          <p
-            className={`text-center ${
-              theme === "dark" ? "text-[#9ca3af]" : "text-neutral-500"
-            }`}
-          >
-            Loading services...
-          </p>
+          <div className="flex flex-col md:flex-row gap-4">
+            <ServiceCardSkeleton />
+            <ServiceCardSkeleton />
+            <ServiceCardSkeleton />
+          </div>
         )}
         {error && <p className="text-center text-red-600">{error}</p>}
         {!loading && !error && (

@@ -9,6 +9,7 @@ import type { EmblaCarouselType } from "embla-carousel";
 import { useTheme } from "../contexts/ThemeContext";
 import { fetchApi } from "../lib/api";
 import type { CertificatesData, Certificate } from "../types";
+import { CertificateSlideSkeleton } from "./Skeleton";
 
 const useAccessibility = (emblaApi: EmblaCarouselType | undefined): void => {
   useEffect(() => {
@@ -122,24 +123,21 @@ export default function Certificates(): React.JSX.Element {
     <section
       id="certificates"
       aria-labelledby="certificates-heading"
-      className={`py-10 md:py-14 ${
-        isDark ? "bg-[#111827]" : "bg-neutral-100"
-      }`}
+      className={`py-10 md:py-14 ${isDark ? "bg-[#111827]" : "bg-neutral-100"
+        }`}
     >
       <div className="max-w-5xl mx-auto px-4">
         <div className="text-center mb-6 md:mb-8">
           <h2
             id="certificates-heading"
-            className={`text-3xl md:text-4xl font-serif font-bold ${
-              isDark ? "text-[#f3f4f6]" : "text-neutral-900"
-            }`}
+            className={`text-3xl md:text-4xl font-serif font-bold ${isDark ? "text-[#f3f4f6]" : "text-neutral-900"
+              }`}
           >
             Gift Certificates
           </h2>
           <p
-            className={`mt-2 text-lg ${
-              isDark ? "text-[#9ca3af]" : "text-neutral-500"
-            }`}
+            className={`mt-2 text-lg ${isDark ? "text-[#9ca3af]" : "text-neutral-500"
+              }`}
           >
             Give a moment of care and relaxation.
           </p>
@@ -147,13 +145,14 @@ export default function Certificates(): React.JSX.Element {
       </div>
 
       {loading && (
-        <p
-          className={`text-center ${
-            isDark ? "text-[#9ca3af]" : "text-neutral-500"
-          }`}
-        >
-          Loading certificates...
-        </p>
+        <div className="flex gap-2 px-2 md:px-3">
+          <div className="relative shrink-0 basis-[80%] md:basis-[55%]">
+            <CertificateSlideSkeleton />
+          </div>
+          <div className="relative shrink-0 basis-[80%] md:basis-[55%]">
+            <CertificateSlideSkeleton />
+          </div>
+        </div>
       )}
       {error && <p className="text-center text-red-600">{error}</p>}
       {!loading && !error && (
@@ -190,11 +189,10 @@ export default function Certificates(): React.JSX.Element {
 
             <button
               type="button"
-              className={`embla__button embla__button--prev absolute left-3 top-1/2 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full shadow-md transition hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-40 disabled:cursor-not-allowed z-10 ${
-                isDark
+              className={`embla__button embla__button--prev absolute left-3 top-1/2 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full shadow-md transition hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-40 disabled:cursor-not-allowed z-10 ${isDark
                   ? "bg-black/65 text-white hover:bg-black/80"
                   : "bg-white/90 text-neutral-800 hover:bg-white"
-              }`}
+                }`}
               onClick={() => emblaApi?.goToPrev()}
               disabled={prevBtnDisabled}
             >
@@ -212,11 +210,10 @@ export default function Certificates(): React.JSX.Element {
             </button>
             <button
               type="button"
-              className={`embla__button embla__button--next absolute right-3 top-1/2 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full shadow-md transition hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-40 disabled:cursor-not-allowed z-10 ${
-                isDark
+              className={`embla__button embla__button--next absolute right-3 top-1/2 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full shadow-md transition hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-40 disabled:cursor-not-allowed z-10 ${isDark
                   ? "bg-black/65 text-white hover:bg-black/80"
                   : "bg-white/90 text-neutral-800 hover:bg-white"
-              }`}
+                }`}
               onClick={() => emblaApi?.goToNext()}
               disabled={nextBtnDisabled}
             >
@@ -244,13 +241,12 @@ export default function Certificates(): React.JSX.Element {
                   key={index}
                   type="button"
                   onClick={() => emblaApi?.goTo(index)}
-                  className={`embla__dot h-2.5 rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
-                    index === selectedIndex
+                  className={`embla__dot h-2.5 rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${index === selectedIndex
                       ? "w-7 bg-amber-500"
                       : isDark
                         ? "w-2.5 bg-[#4b5563] hover:bg-[#6b7280]"
                         : "w-2.5 bg-neutral-300 hover:bg-neutral-400"
-                  }`}
+                    }`}
                 />
               ))}
             </div>

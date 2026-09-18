@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useTheme } from "../../contexts/ThemeContext";
 import { fetchApi } from "../../lib/api";
 import type { CertificatesData, Certificate } from "../../types";
+import { CertificateListSkeleton } from "../../components/Skeleton";
 
 export default function CertificatesDetailView(): React.JSX.Element {
   const { theme } = useTheme();
@@ -72,7 +73,7 @@ export default function CertificatesDetailView(): React.JSX.Element {
             </p>
           </div>
 
-          {loading && <p className={`text-center ${textMuted}`}>Loading certificates...</p>}
+          {loading && <CertificateListSkeleton count={3} />}
           {error && <p className="text-center text-red-600">{error}</p>}
           {!loading && !error && (
             <div className="grid gap-6 md:gap-8">

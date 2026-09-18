@@ -10,6 +10,7 @@ import "lightgallery/css/lg-zoom.css";
 import { useTheme } from "../contexts/ThemeContext";
 import { fetchApi } from "../lib/api";
 import { GalleryData } from "../types";
+import { GalleryCardSkeleton } from "./Skeleton";
 
 export default function Gallery(): React.JSX.Element {
   const { theme } = useTheme();
@@ -76,7 +77,15 @@ export default function Gallery(): React.JSX.Element {
             Moments of care, grooming, and styling
           </p>
         </div>
-        {loading && <p className={`text-center ${subColor}`}>Loading gallery...</p>}
+        {loading && (
+          <div className="grid grid-cols-5 gap-1">
+            <GalleryCardSkeleton />
+            <GalleryCardSkeleton />
+            <GalleryCardSkeleton />
+            <GalleryCardSkeleton />
+            <GalleryCardSkeleton />
+          </div>
+        )}
         {error && <p className="text-center text-red-600">{error}</p>}
         {!loading && !error && (
           <div ref={galleryRef} className="grid grid-cols-5 gap-1">
