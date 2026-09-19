@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Place } from "../types";
 import { fetchApi } from "../lib/api";
 import { useTheme } from "../contexts/ThemeContext";
+import { PlaceCardSkeleton } from "./Skeleton";
 
 interface PlaceItemProps {
   place: Place;
@@ -40,9 +41,8 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
       <Link
         href={`/places/${place.id}`}
         aria-label={`View details for ${place.title}`}
-        className={`absolute inset-0 z-10 rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset ${
-          isDark ? "focus-visible:ring-amber-400" : "focus-visible:ring-amber-600"
-        }`}
+        className={`absolute inset-0 z-10 rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset ${isDark ? "focus-visible:ring-amber-400" : "focus-visible:ring-amber-600"
+          }`}
       />
       <div className="grid grid-cols-1 md:grid-cols-12 min-h-[300px]">
         <div className="relative md:col-span-5 min-h-[240px] md:min-h-full overflow-hidden">
@@ -103,9 +103,8 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
             </div>
           </div>
           <div
-            className={`flex flex-wrap items-center gap-3 ${
-              isDark ? "mt-8" : "mt-6"
-            } relative z-20`}
+            className={`flex flex-wrap items-center gap-3 ${isDark ? "mt-8" : "mt-6"
+              } relative z-20`}
           >
             <a
               href={place.addressLink || undefined}
@@ -186,22 +185,26 @@ export default function PlaceSelect() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-6">
           <h2
-            className={`text-4xl md:text-5xl font-serif font-bold tracking-tight ${
-              isDark ? "text-white" : "text-neutral-900"
-            }`}
+            className={`text-4xl md:text-5xl font-serif font-bold tracking-tight ${isDark ? "text-white" : "text-neutral-900"
+              }`}
           >
             Our Locations
           </h2>
           <p
-            className={`mt-4 text-lg md:text-xl ${
-              isDark ? "text-neutral-400" : "text-neutral-500"
-            }`}
+            className={`mt-4 text-lg md:text-xl ${isDark ? "text-neutral-400" : "text-neutral-500"
+              }`}
           >
             Find your preferred salon
           </p>
         </div>
         <div className="flex flex-col gap-8 md:gap-10">
-          {loading && <p className="text-center">Loading locations...</p>}
+          {loading && (
+            <>
+              <PlaceCardSkeleton />
+              <PlaceCardSkeleton />
+              <PlaceCardSkeleton />
+            </>
+          )}
           {error && <p className="text-center text-red-600">{error}</p>}
           {!loading && !error && places.map((place) => <PlaceItem key={place.id} place={place} />)}
         </div>
