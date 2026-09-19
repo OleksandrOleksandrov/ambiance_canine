@@ -5,6 +5,7 @@ import { Lottie } from 'lottie-react';
 import dogPawAnimation from '../assets/dog-paw-walk.json';
 import { useTheme } from '../contexts/ThemeContext';
 import { BRAND_NAME } from '../constants/strings';
+import SocialLinks from './SocialLinks';
 
 function ThemeToggle(): React.JSX.Element {
   const { theme, toggleTheme } = useTheme();
@@ -111,6 +112,7 @@ export default function Navbar(): React.JSX.Element {
               </a>
             </nav>
 
+            <SocialLinks />
             <ThemeToggle />
           </div>
         </div>
