@@ -72,7 +72,7 @@ ambiance_canine/
 │   ├── main.py                 # FastAPI routes
 │   ├── db.py                   # DynamoDB queries and table configuration
 │   ├── seed_data.py            # Initial content records
-│   ├── seed_db.py              # Idempotent DynamoDB seeding and db_setup Lambda handler
+│   ├── seed_db.py              # Authoritative DynamoDB seeding, id generation, and db_setup Lambda handler
 │   ├── lambda_handler.py       # Mangum API Lambda entrypoint
 │   └── deploy.py               # Lambda package builder
 ├── frontend/
@@ -260,11 +260,11 @@ certificates (standalone)
 
 | Table | Primary Key | Purpose | Key Attributes |
 |-------|-------------|---------|----------------|
-| **places** | `id` (String, slug) | Salon locations | `slug`, `title`, `place`, `address`, `address_link`, `places_called`, `phone_number` (list), `photos` (list), `groomer_ids` (list), `display_order`, `is_active` |
-| **groomers** | `id` (String, slug) | Groomer profiles | `slug`, `name`, `photo`, `specialty`, `place_ids` (list), `display_order`, `is_active` |
-| **services** | `id` (String, slug) | Service categories with media | `slug`, `title`, `subtitle`, `description`, `icon`, `image_url`, `after_image_url`, `media_type`, `image_folder`, `media` (list), `display_order`, `is_active` |
+| **places** | `id` (String, generated UUID) | Salon locations | `key`, `title`, `place`, `address`, `address_link`, `places_called`, `phone_number` (list), `photos` (list), `groomer_ids` (list), `display_order`, `is_active` |
+| **groomers** | `id` (String, generated UUID) | Groomer profiles | `key`, `name`, `photo`, `specialty`, `place_ids` (list), `display_order`, `is_active` |
+| **services** | `id` (String, generated UUID) | Service categories with media | `key`, `title`, `subtitle`, `description`, `icon`, `image_url`, `after_image_url`, `media_type`, `image_folder`, `media` (list), `display_order`, `is_active` |
 | **gallery_photos** | `id` (String) | Gallery images | `name`, `alt_text`, `photo_url`, `display_order`, `is_active` |
-| **certificates** | `id` (String) | Gift certificates | `src`, `alt`, `description`, `locale`, `display_order`, `is_active` |
+| **certificates** | `id` (String, generated UUID) | Gift certificates | `key`, `src`, `alt`, `description`, `locale`, `display_order`, `is_active` |
 
 ### Indexes (GSI on every table)
 
@@ -275,7 +275,11 @@ certificates (standalone)
 ### Notes
 
 - **Sparse index**: Only items with `status = "active"` appear in the GSI, so inactive items are excluded automatically.
-- **Denormalization**: Each place stores `groomer_ids` (list of groomer slugs); each groomer stores `place_ids` (list of place slugs). This eliminates the need for a junction table and reduces read queries to a single GSI query plus a `BatchGetItem`.
+- **Generated ids**: `seed_db._generate_id(entity_type, key)` derives a UUIDv5 from the standard `uuid.NAMESPACE_DNS` and the entity's `key`, so ids are opaque but deterministic. Determinism matters because a re-seed rewrites the tables: the same `key` must reproduce the same id so published `/places/{id}/` URLs and cross-references stay valid. Never change a `key` for a live entity without a data migration, because doing so changes its id.
+- **Authoritative seed**: The `db_setup` Lambda clears every table before writing, so rows left behind by an older schema (for example the original slug-keyed items) cannot linger in the `ActiveOrderedIndex` and break the API. Content created outside `seed_data.py` will be lost on the next deploy.
+- **Null normalization**: boto3's default DynamoDB config round-trips a stored NULL as Python `None`, so `row.get(field, [])` yields `None` rather than the default whenever the attribute exists with a NULL value. Every list field is read as `row.get(field) or []` so the API always emits a JSON array. Without this, a single record with `"photos": None` in `seed_data.py` returns `"photos": null` and crashes the Next.js prerender, which fails the whole build rather than one page.
+- **`key` attribute**: The human-authored natural key (`cagnes-sur-mer`, `creative-design`). It is the input to id generation, is what makes a stored UUID human-identifiable in logs, and is the stable discriminator the frontend matches on (`Services.tsx` selects the creative-design slider by `key`).
+- **Denormalization**: Each place stores `groomer_ids` (list of groomer ids); each groomer stores `place_ids` (list of place ids). This eliminates the need for a junction table and reduces read queries to a single GSI query plus a `BatchGetItem`.
 - **Soft deletes**: All tables use `is_active` boolean flags; the sparse GSI ensures only active items are returned.
 - **Display ordering**: All content tables include `display_order` for manual sorting, embedded in the `sort_key` for ordered GSI queries.
 - **Timestamps**: Most tables have `created_at` and `updated_at` (ISO 8601).
@@ -286,9 +290,11 @@ certificates (standalone)
 
 Content is stored in DynamoDB tables and fetched by the frontend through the API. The former mock place and certificate modules are no longer used as data sources.
 
-Update `backend/seed_data.py` to change the initial dataset, then run `scripts/setup_db.py` or the `db_setup` Lambda. Seeding is idempotent for places, groomers, and services; gallery photos and certificates are replaced with the current seed set.
+Update `backend/seed_data.py` to change the initial dataset, then run `scripts/setup_db.py` or the `db_setup` Lambda. Every table is cleared and rewritten from the seed set, so the seed is the single source of truth and stale rows cannot survive a deploy. Because ids are derived from `key`, a re-seed reproduces the same ids and therefore the same `/places/{id}/` URLs.
 
-Location detail routes are generated from the API response at build time under `/places/{id}/`.
+Each entity declares a `key` in `seed_data.py`; its primary key is generated from that key by `seed_db._generate_id()` and is never written by hand.
+
+Location detail routes are generated from the API response at build time under `/places/{id}/`, so the URL segment is the generated id (a UUID).
 
 ---
 

@@ -1,6 +1,6 @@
 export interface Place {
   id: string;
-  slug?: string;
+  key: string;
   title: string;
   place: string;
   phone_number: string[];
@@ -13,7 +13,7 @@ export interface Place {
 
 export interface Groomer {
   id: string;
-  slug?: string;
+  key: string;
   name: string;
   placesIds: string[];
   photo: string | null;
@@ -43,7 +43,7 @@ export interface ServiceMedia {
 }
 
 export interface ServiceCategory extends Service {
-  slug: string;
+  key: string;
   media: ServiceMedia[];
   afterImage?: string | null;
   mediaType?: "image" | "video";
@@ -62,6 +62,7 @@ export interface GalleryData {
 
 export interface Certificate {
   id: string;
+  key: string;
   src: string;
   alt: string;
   description: string;

@@ -1,5 +1,6 @@
 import argparse
 import os
+import uuid
 from datetime import datetime, timezone
 
 from boto3 import resource
@@ -37,6 +38,18 @@ def _sort_key(display_order, item_id):
     return f"{display_order:010d}#{item_id}"
 
 
+def _generate_id(entity_type, key):
+    """Return a stable id for an entity, derived from its natural key.
+
+    Places, groomers and services are written with put_item without clearing
+    their tables first, so a random id would orphan the existing row on every
+    re-seed and invalidate its URL and cross-references.
+    """
+    if not key:
+        raise ValueError(f"{entity_type} requires a non-empty key")
+    return str(uuid.uuid5(uuid.NAMESPACE_DNS, f"{entity_type}:{key}"))
+
+
 def _timestamp():
     return datetime.now(timezone.utc).isoformat()
 
@@ -59,23 +72,26 @@ def _clear_table(dynamodb, table_key):
 
 def put_groomers(dynamodb, data=SEED_DATA):
     table = _get_table(dynamodb, "groomers")
+    _clear_table(dynamodb, "groomers")
     place_ids_by_groomer = {}
     for place in data["places"]:
-        for slug in place.get("groomer_slugs", []):
-            place_ids_by_groomer.setdefault(slug, []).append(place["slug"])
+        place_id = _generate_id("place", place["key"])
+        for groomer_key in place.get("groomer_ids", []):
+            place_ids_by_groomer.setdefault(groomer_key, []).append(place_id)
     with table.batch_writer() as batch:
         for index, groomer in enumerate(data["groomers"]):
+            groomer_id = _generate_id("groomer", groomer["key"])
             item = {
-                "id": groomer["slug"],
-                "slug": groomer["slug"],
+                "id": groomer_id,
+                "key": groomer["key"],
                 "name": groomer["name"],
                 "photo": groomer.get("photo"),
                 "specialty": groomer.get("specialty"),
                 "display_order": index,
                 "is_active": True,
                 "status": "active",
-                "sort_key": _sort_key(index, groomer["slug"]),
-                "place_ids": place_ids_by_groomer.get(groomer["slug"], []),
+                "sort_key": _sort_key(index, groomer_id),
+                "place_ids": place_ids_by_groomer.get(groomer["key"], []),
                 "created_at": _timestamp(),
                 "updated_at": _timestamp(),
             }
@@ -84,11 +100,13 @@ def put_groomers(dynamodb, data=SEED_DATA):
 
 def put_places(dynamodb, data=SEED_DATA):
     table = _get_table(dynamodb, "places")
+    _clear_table(dynamodb, "places")
     with table.batch_writer() as batch:
         for index, place in enumerate(data["places"]):
+            place_id = _generate_id("place", place["key"])
             item = {
-                "id": place["slug"],
-                "slug": place["slug"],
+                "id": place_id,
+                "key": place["key"],
                 "title": place["title"],
                 "place": place["place"],
                 "address": place.get("address"),
@@ -99,8 +117,11 @@ def put_places(dynamodb, data=SEED_DATA):
                 "display_order": index,
                 "is_active": True,
                 "status": "active",
-                "sort_key": _sort_key(index, place["slug"]),
-                "groomer_ids": place.get("groomer_slugs", []),
+                "sort_key": _sort_key(index, place_id),
+                "groomer_ids": [
+                    _generate_id("groomer", groomer_key)
+                    for groomer_key in place.get("groomer_ids", [])
+                ],
                 "created_at": _timestamp(),
                 "updated_at": _timestamp(),
             }
@@ -109,8 +130,10 @@ def put_places(dynamodb, data=SEED_DATA):
 
 def put_services(dynamodb, data=SEED_DATA):
     table = _get_table(dynamodb, "services")
+    _clear_table(dynamodb, "services")
     with table.batch_writer() as batch:
         for index, service in enumerate(data["services"]):
+            service_id = _generate_id("service", service["key"])
             media = service.get("media", [])
             primary_image = next(
                 (
@@ -131,8 +154,8 @@ def put_services(dynamodb, data=SEED_DATA):
                 service.get("media_type", "image"),
             )
             item = {
-                "id": service["slug"],
-                "slug": service["slug"],
+                "id": service_id,
+                "key": service["key"],
                 "title": service["title"],
                 "subtitle": service.get("subtitle"),
                 "description": service.get("description"),
@@ -145,7 +168,7 @@ def put_services(dynamodb, data=SEED_DATA):
                 "display_order": index,
                 "is_active": True,
                 "status": "active",
-                "sort_key": _sort_key(index, service["slug"]),
+                "sort_key": _sort_key(index, service_id),
                 "created_at": _timestamp(),
                 "updated_at": _timestamp(),
             }
@@ -177,9 +200,10 @@ def put_certificates(dynamodb, data=SEED_DATA):
     _clear_table(dynamodb, "certificates")
     with table.batch_writer() as batch:
         for index, cert in enumerate(data["certificates"]):
+            cert_id = _generate_id("certificate", cert["key"])
             item = {
-                "id": cert["id"],
-                "slug": cert["id"],
+                "id": cert_id,
+                "key": cert["key"],
                 "src": cert["src"],
                 "alt": cert["alt"],
                 "description": cert.get("description", ""),
@@ -187,7 +211,7 @@ def put_certificates(dynamodb, data=SEED_DATA):
                 "display_order": index,
                 "is_active": True,
                 "status": "active",
-                "sort_key": _sort_key(index, cert["id"]),
+                "sort_key": _sort_key(index, cert_id),
                 "created_at": _timestamp(),
                 "updated_at": _timestamp(),
             }

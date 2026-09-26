@@ -81,16 +81,16 @@ async def _batch_get_keys(table_key, keys):
 def _format_groomer(row):
     return {
         "id": str(row["id"]),
-        "slug": row["slug"],
+        "key": row["key"],
         "name": row["name"],
-        "placesIds": [str(v) for v in row.get("place_ids", [])],
+        "placesIds": [str(v) for v in row.get("place_ids") or []],
         "photo": row.get("photo"),
         "specialty": row.get("specialty"),
     }
 
 
 def _format_place(row, groomer_lookup):
-    groomer_ids = row.get("groomer_ids", [])
+    groomer_ids = row.get("groomer_ids") or []
     groomers = [
         groomer_lookup[gid]
         for gid in groomer_ids
@@ -98,11 +98,11 @@ def _format_place(row, groomer_lookup):
     ]
     return {
         "id": str(row["id"]),
-        "slug": row["slug"],
+        "key": row["key"],
         "title": row["title"],
         "place": row["place"],
-        "phone_number": row.get("phone_number", []),
-        "photos": row.get("photos", []),
+        "phone_number": row.get("phone_number") or [],
+        "photos": row.get("photos") or [],
         "groomers": groomers,
         "address": row.get("address"),
         "addressLink": row.get("address_link"),
@@ -114,7 +114,7 @@ def _format_service(row):
     media = row.get("media", []) or []
     return {
         "id": str(row["id"]),
-        "slug": row["slug"],
+        "key": row["key"],
         "title": row["title"],
         "subtitle": row.get("subtitle"),
         "description": row.get("description"),
@@ -147,6 +147,7 @@ def _format_gallery_image(row):
 def _format_certificate(row):
     return {
         "id": str(row["id"]),
+        "key": row["key"],
         "src": row["src"],
         "alt": row["alt"],
         "description": row.get("description"),
@@ -184,7 +185,7 @@ async def get_places_from_db():
     place_items = await _query_active_ordered("places")
     all_groomer_ids = set()
     for place in place_items:
-        all_groomer_ids.update(place.get("groomer_ids", []))
+        all_groomer_ids.update(place.get("groomer_ids") or [])
     groomer_items = await _batch_get_keys("groomers", list(all_groomer_ids))
     groomer_lookup = {}
     for g in sorted(groomer_items, key=lambda x: x.get("sort_key", "")):
@@ -203,7 +204,7 @@ async def get_place_from_db(place_id):
         return None
     if not item.get("is_active", False):
         return None
-    groomer_ids = item.get("groomer_ids", [])
+    groomer_ids = item.get("groomer_ids") or []
     groomer_items = await _batch_get_keys("groomers", groomer_ids)
     sorted_groomers = sorted(
         groomer_items, key=lambda x: x.get("sort_key", "")
