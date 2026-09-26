@@ -34,6 +34,8 @@ export default function PlaceDetailView({
     : "bg-amber-600 hover:bg-amber-700 text-white";
 
   const availableGroomers = place.groomers;
+  const photos = place.photos ?? [];
+  const phoneNumbers = place.phone_number ?? [];
 
   const galleryRef = useRef<HTMLDivElement>(null);
   const lightGalleryInstance = useRef<ReturnType<typeof lightGallery> | null>(null);
@@ -77,9 +79,9 @@ export default function PlaceDetailView({
 
         {/* Header image */}
         <div className="relative h-100 rounded-3xl overflow-hidden shadow-xl mb-12">
-          {place.photos.length > 0 && (
+          {photos.length > 0 && (
             <img
-              src={place.photos[0]}
+              src={photos[0]}
               alt={place.title}
               className="w-full h-full object-cover"
             />
@@ -119,7 +121,7 @@ export default function PlaceDetailView({
               <div className="w-full">
                 <p className={`text-sm font-medium ${textMuted}`}>Contact</p>
                 <div className="mt-1 space-y-1">
-                  {place.phone_number.map((phone) => (
+                  {phoneNumbers.map((phone) => (
                     <a
                       key={phone}
                       href={`tel:${phone}`}
@@ -196,7 +198,7 @@ export default function PlaceDetailView({
               Gallery
             </h3>
             <div ref={galleryRef} className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {place.photos.map((photo) => (
+              {photos.map((photo) => (
                 <a
                   key={photo}
                   href={photo}

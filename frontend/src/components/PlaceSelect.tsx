@@ -33,6 +33,7 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
     ? "text-[#6b7280] text-xs"
     : "text-neutral-400 text-5xl";
   const textPrimary = isDark ? "text-[#d1d5db]" : "text-neutral-600";
+  const coverPhoto = place.photos?.[0];
 
   return (
     <div
@@ -46,9 +47,9 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
       />
       <div className="grid grid-cols-1 md:grid-cols-12 min-h-[300px]">
         <div className="relative md:col-span-5 min-h-[240px] md:min-h-full overflow-hidden">
-          {place.photos[0] ? (
+          {coverPhoto ? (
             <img
-              src={place.photos[0]}
+              src={coverPhoto}
               alt={place.title}
               className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 absolute inset-0"
               loading="lazy"

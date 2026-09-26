@@ -48,7 +48,7 @@ export default function Services(): React.JSX.Element {
   }, []);
 
   const designCategory = categories.find(
-    (category) => category.slug === "creative-design"
+    (category) => category.key === "creative-design"
   );
   const designImages =
     designCategory?.media.filter((media) => media.role === "primary") || [];
