@@ -21,7 +21,7 @@ export default function Hero(): React.JSX.Element {
       <div className="max-w-1xl mx-auto px-8 pl-8 md:ml-[4%] md:grid md:grid-cols-[0.3fr_1.7fr] md:gap-8 md:text-left">
         <div className="mb-8 flex flex-col items-center justify-center md:mb-0 md:items-start md:justify-center">
           <img
-            src="https://ambiance-dev.s3.us-east-1.amazonaws.com/logo/photo_ambiance_logo.jpg"
+            src="https://ambiance-s3-bucket.s3.us-east-1.amazonaws.com/logo/photo_ambiance_logo.jpg"
             alt="Ambiance Canine Logo"
             className="h-32 w-32 md:h-40 md:w-40 rounded-full object-cover border-4 border-amber-400 shadow-lg"
           />
