@@ -76,6 +76,13 @@ PLACES_RESPONSE="$(mktemp)"
 if ! curl --fail-with-body --silent --show-error \
   --retry 5 --retry-delay 3 --max-time 30 \
   "${API_URL}/api/places" >"$PLACES_RESPONSE"; then
+  printf 'API response body:\n' >&2
+  if [ -s "$PLACES_RESPONSE" ]; then
+    head -c 4096 "$PLACES_RESPONSE" >&2
+    printf '\n' >&2
+  else
+    printf '(empty)\n' >&2
+  fi
   rm -f "$PLACES_RESPONSE"
   printf 'Unable to verify the deployed places API.\n' >&2
   exit 1
