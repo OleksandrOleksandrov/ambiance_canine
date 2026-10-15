@@ -114,7 +114,7 @@ ambiance_canine/
 
 - Node.js 20 or newer
 - npm
-- Python 3.11 or newer
+- Python 3.15 or newer
 - Docker for building the Lambda package
 - AWS CLI, Terraform, and AWS credentials for deployment
 - Docker (for DynamoDB Local during local development)
@@ -323,7 +323,7 @@ The API uses `CORS_ORIGINS` to configure browser access. Content endpoints are c
 
 `scripts/deploy.sh` performs the following steps:
 
-1. Builds the Lambda package with the AWS Python 3.12 runtime image.
+1. Builds the Lambda package with the AWS Python 3.15 runtime image.
 2. Initializes the Terraform S3 backend and selects the requested workspace.
 3. Applies the environment-specific Terraform configuration.
 4. Invokes the database setup Lambda.
