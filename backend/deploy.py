@@ -2,7 +2,7 @@ import os
 import shutil
 import zipfile
 import subprocess
-
+import sys
 
 PACKAGES = {
     "api": {
@@ -19,7 +19,6 @@ PACKAGES = {
     },
 }
 
-
 def build_package(name, config):
     package_directory = config["directory"]
     archive = config["archive"]
@@ -34,25 +33,22 @@ def build_package(name, config):
     print(f"Installing {name} dependencies for Lambda runtime...")
     subprocess.run(
         [
-            "docker",
-            "run",
-            "--rm",
-            "-v",
-            f"{os.getcwd()}:/var/task",
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--only-binary=:all:",
+            "--target",
+            package_directory,
+            "-r",
+            config["requirements"],
             "--platform",
-            "linux/amd64",
-            "--entrypoint",
-            "",
-            "public.ecr.aws/lambda/python:3.12",
-            "/bin/sh",
-            "-c",
-            (
-                "pip install --no-cache-dir --no-compile "
-                f"--target /var/task/{package_directory} "
-                f"-r /var/task/{config['requirements']} "
-                "--platform manylinux2014_aarch64 --implementation cp "
-                "--python-version 3.12 --only-binary=:all: --upgrade"
-            ),
+            "linux/arm64",
+            "--implementation",
+            "cp",
+            "--python-version",
+            "3.15",
+            "--upgrade",
         ],
         check=True,
     )
