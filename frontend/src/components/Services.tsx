@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ServiceCategory } from "../types";
 import { useTheme } from "../contexts/ThemeContext";
+import { useLanguage } from "../contexts/LanguageContext";
 import { fetchApi } from "../lib/api";
 import BeforeAfterComparison from "./BeforeAfterComparison";
 import { ServiceCardSkeleton } from "./Skeleton";
@@ -19,6 +20,7 @@ interface ServiceBlock {
 
 export default function Services(): React.JSX.Element {
   const { theme } = useTheme();
+  const { language, t } = useLanguage();
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,11 +33,11 @@ export default function Services(): React.JSX.Element {
     let active = true;
     const loadCategories = async () => {
       try {
-        const data = await fetchApi<ServiceCategory[]>("/api/services");
+        const data = await fetchApi<ServiceCategory[]>(`/api/services?lang=${language}`);
         if (active) setCategories(data);
       } catch (err) {
         if (active) {
-          setError(err instanceof Error ? err.message : "Unable to load services.");
+          setError(err instanceof Error ? err.message : t("common.loadingServices"));
         }
       } finally {
         if (active) setLoading(false);
@@ -45,7 +47,7 @@ export default function Services(): React.JSX.Element {
     return () => {
       active = false;
     };
-  }, []);
+  }, [language, t]);
 
   const designCategory = categories.find(
     (category) => category.key === "creative-design"
@@ -105,14 +107,14 @@ export default function Services(): React.JSX.Element {
               theme === "dark" ? "text-[#f3f4f6]" : "text-neutral-900"
             }`}
           >
-            Our Services
+            {t("services.title")}
           </h2>
           <p
             className={`${
               theme === "dark" ? "text-[#9ca3af]" : "text-neutral-500"
             } mt-3 text-lg`}
           >
-            Comprehensive care for your beloved dogs
+            {t("services.subtitle")}
           </p>
         </div>
         {loading && (
@@ -161,8 +163,8 @@ export default function Services(): React.JSX.Element {
                     <BeforeAfterComparison
                       beforeImage={block.image}
                       afterImage={block.afterImage}
-                      beforeLabel="Before"
-                      afterLabel="After"
+                      beforeLabel={t("services.before")}
+                      afterLabel={t("services.after")}
                       className="w-full h-full !rounded-none md:!rounded-xl"
                       autoPlay
                       autoPlayInterval={6000}

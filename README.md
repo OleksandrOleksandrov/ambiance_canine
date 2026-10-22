@@ -260,11 +260,11 @@ certificates (standalone)
 
 | Table | Primary Key | Purpose | Key Attributes |
 |-------|-------------|---------|----------------|
-| **places** | `id` (String, generated UUID) | Salon locations | `key`, `title`, `place`, `address`, `address_link`, `places_called`, `phone_number` (list), `photos` (list), `groomer_ids` (list), `display_order`, `is_active` |
-| **groomers** | `id` (String, generated UUID) | Groomer profiles | `key`, `name`, `photo`, `specialty`, `place_ids` (list), `display_order`, `is_active` |
-| **services** | `id` (String, generated UUID) | Service categories with media | `key`, `title`, `subtitle`, `description`, `icon`, `image_url`, `after_image_url`, `media_type`, `image_folder`, `media` (list), `display_order`, `is_active` |
-| **gallery_photos** | `id` (String) | Gallery images | `name`, `alt_text`, `photo_url`, `display_order`, `is_active` |
-| **certificates** | `id` (String, generated UUID) | Gift certificates | `key`, `src`, `alt`, `description`, `locale`, `display_order`, `is_active` |
+| **places** | `id` (String, generated UUID) | Salon locations | `key`, `title`, `place`, `address`, `address_link`, `places_called`, `translations`, `phone_number` (list), `photos` (list), `groomer_ids` (list), `display_order`, `is_active` |
+| **groomers** | `id` (String, generated UUID) | Groomer profiles | `key`, `name`, `photo`, `specialty`, `translations`, `place_ids` (list), `display_order`, `is_active` |
+| **services** | `id` (String, generated UUID) | Service categories with media | `key`, `title`, `subtitle`, `description`, `translations`, `icon`, `image_url`, `after_image_url`, `media_type`, `image_folder`, `media` (list), `display_order`, `is_active` |
+| **gallery_photos** | `id` (String) | Gallery images | `name`, `alt_text`, `translations`, `photo_url`, `display_order`, `is_active` |
+| **certificates** | `id` (String, generated UUID) | Gift certificates | `key`, `src`, `alt`, `description`, `translations`, `locale`, `display_order`, `is_active` |
 
 ### Indexes (GSI on every table)
 
@@ -283,6 +283,7 @@ certificates (standalone)
 - **Soft deletes**: All tables use `is_active` boolean flags; the sparse GSI ensures only active items are returned.
 - **Display ordering**: All content tables include `display_order` for manual sorting, embedded in the `sort_key` for ordered GSI queries.
 - **Timestamps**: Most tables have `created_at` and `updated_at` (ISO 8601).
+- **Translations**: The `translations` map stores localized text for `en`, `fr`, `uk`, and `ru`; media entries in a service also store localized alt text. Content endpoints select the response language with the `lang` query parameter (for example, `/api/services?lang=en`). Missing translations fall back to the record's default text.
 
 ---
 
@@ -290,7 +291,7 @@ certificates (standalone)
 
 Content is stored in DynamoDB tables and fetched by the frontend through the API. The former mock place and certificate modules are no longer used as data sources.
 
-Update `backend/seed_data.py` to change the initial dataset, then run `scripts/setup_db.py` or the `db_setup` Lambda. Every table is cleared and rewritten from the seed set, so the seed is the single source of truth and stale rows cannot survive a deploy. Because ids are derived from `key`, a re-seed reproduces the same ids and therefore the same `/places/{id}/` URLs.
+Update `backend/seed_data.py` to change the initial dataset, then run `scripts/setup_db.py` or the `db_setup` Lambda to apply it to DynamoDB. This localization change is not applied to an already-populated database until it is re-seeded. Every table is cleared and rewritten from the seed set, so the seed is the single source of truth and content created outside the seed set will be lost. Because ids are derived from `key`, a re-seed reproduces the same ids and therefore the same `/places/{id}/` URLs.
 
 Each entity declares a `key` in `seed_data.py`; its primary key is generated from that key by `seed_db._generate_id()` and is never written by hand.
 
@@ -304,11 +305,11 @@ The FastAPI application exposes these endpoints:
 
 ### Content
 
-- `GET /api/places` returns `{ places, groomers }`
-- `GET /api/places/{place_id}` returns one location
-- `GET /api/services` returns service categories with media
-- `GET /api/gallery` returns `{ images }`
-- `GET /api/certificates` returns `{ certificates }`
+- `GET /api/places?lang=en|fr|uk|ru` returns `{ places, groomers }`
+- `GET /api/places/{place_id}?lang=en|fr|uk|ru` returns one localized location
+- `GET /api/services?lang=en|fr|uk|ru` returns localized service categories with media
+- `GET /api/gallery?lang=en|fr|uk|ru` returns `{ images }` with localized text
+- `GET /api/certificates?lang=en|fr|uk|ru` returns `{ certificates }` with localized text
 
 ### Health
 

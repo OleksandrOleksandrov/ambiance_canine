@@ -7,9 +7,12 @@ import { useTheme } from "../../contexts/ThemeContext";
 import { fetchApi } from "../../lib/api";
 import type { CertificatesData, Certificate } from "../../types";
 import { CertificateListSkeleton } from "../../components/Skeleton";
+import { useLanguage } from "../../contexts/LanguageContext";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
 
 export default function CertificatesDetailView(): React.JSX.Element {
   const { theme } = useTheme();
+  const { language, t } = useLanguage();
   const isDark = theme === "dark";
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,12 +22,12 @@ export default function CertificatesDetailView(): React.JSX.Element {
     let active = true;
     const loadCertificates = async () => {
       try {
-        const data = await fetchApi<CertificatesData>("/api/certificates");
+        const data = await fetchApi<CertificatesData>(`/api/certificates?lang=${language}`);
         if (active) setCertificates(data.certificates);
       } catch (err) {
         if (active) {
           setError(
-            err instanceof Error ? err.message : "Unable to load certificates."
+            err instanceof Error ? err.message : t("common.loadingCertificates")
           );
         }
       } finally {
@@ -35,7 +38,7 @@ export default function CertificatesDetailView(): React.JSX.Element {
     return () => {
       active = false;
     };
-  }, []);
+  }, [language, t]);
 
   const pageBg = isDark
     ? "bg-[#0a0a0a] text-[#ededed]"
@@ -54,22 +57,25 @@ export default function CertificatesDetailView(): React.JSX.Element {
     <main className={`min-h-screen ${pageBg}`}>
       <section className={`py-10 md:py-14 ${sectionBg}`}>
         <div className="max-w-5xl mx-auto px-4">
-          <Link
-            href="/"
-            className={`inline-flex items-center gap-2 text-sm font-medium ${backLink} transition mb-4 md:mb-6`}
-          >
-            <span aria-hidden>←</span>
-            <span>Back</span>
-          </Link>
+          <div className="mb-4 flex items-center justify-between md:mb-6">
+            <Link
+              href="/"
+              className={`inline-flex items-center gap-2 text-sm font-medium ${backLink} transition`}
+            >
+              <span aria-hidden>←</span>
+              <span>{t("common.back")}</span>
+            </Link>
+            <LanguageSwitcher />
+          </div>
 
           <div className="text-center mb-8 md:mb-10">
             <h1
               className={`text-4xl md:text-5xl font-serif font-bold ${heading}`}
             >
-              Gift Certificates
+              {t("certificates.title")}
             </h1>
             <p className={`mt-3 text-lg ${textMuted}`}>
-              Give a moment of care and relaxation.
+              {t("certificateDetail.subtitle")}
             </p>
           </div>
 

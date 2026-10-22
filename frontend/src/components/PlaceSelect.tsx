@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Place } from "../types";
 import { fetchApi } from "../lib/api";
 import { useTheme } from "../contexts/ThemeContext";
+import { useLanguage } from "../contexts/LanguageContext";
 import { PlaceCardSkeleton } from "./Skeleton";
 
 interface PlaceItemProps {
@@ -13,6 +14,7 @@ interface PlaceItemProps {
 
 const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const isDark = theme === "dark";
   const cardBg = isDark
     ? "bg-[#18181b] border-neutral-800"
@@ -41,7 +43,7 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
     >
       <Link
         href={`/places/${place.id}`}
-        aria-label={`View details for ${place.title}`}
+        aria-label={`${t("locations.view")}: ${place.title}`}
         className={`absolute inset-0 z-10 rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset ${isDark ? "focus-visible:ring-amber-400" : "focus-visible:ring-amber-600"
           }`}
       />
@@ -84,7 +86,7 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
                     👨‍🔧
                   </span>
                   <span>
-                    <strong className={labelStrong}>Team:</strong>{" "}
+                    <strong className={labelStrong}>{t("locations.team")}</strong>{" "}
                     {place.groomers.map((groomer) => groomer.name).join(", ")}
                   </span>
                 </div>
@@ -132,7 +134,7 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
-              <span>View Location</span>
+              <span>{t("locations.view")}</span>
             </a>
           </div>
         </div>
@@ -143,6 +145,7 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
 
 export default function PlaceSelect() {
   const { theme } = useTheme();
+  const { language, t } = useLanguage();
   const isDark = theme === "dark";
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(true);
@@ -152,10 +155,10 @@ export default function PlaceSelect() {
     let active = true;
     const loadPlaces = async () => {
       try {
-        const data = await fetchApi<{ places: Place[] }>("/api/places");
+        const data = await fetchApi<{ places: Place[] }>(`/api/places?lang=${language}`);
         if (active) setPlaces(data.places);
       } catch (err) {
-        if (active) setError(err instanceof Error ? err.message : "Unable to load locations.");
+        if (active) setError(err instanceof Error ? err.message : t("common.loadingLocations"));
       } finally {
         if (active) setLoading(false);
       }
@@ -164,7 +167,7 @@ export default function PlaceSelect() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [language, t]);
 
   useEffect(() => {
     if (isDark) {
@@ -189,13 +192,13 @@ export default function PlaceSelect() {
             className={`text-4xl md:text-5xl font-serif font-bold tracking-tight ${isDark ? "text-white" : "text-neutral-900"
               }`}
           >
-            Our Locations
+            {t("locations.title")}
           </h2>
           <p
             className={`mt-4 text-lg md:text-xl ${isDark ? "text-neutral-400" : "text-neutral-500"
               }`}
           >
-            Find your preferred salon
+            {t("locations.subtitle")}
           </p>
         </div>
         <div className="flex flex-col gap-8 md:gap-10">

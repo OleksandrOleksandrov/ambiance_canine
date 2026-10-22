@@ -3,6 +3,7 @@
 import React from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { FacebookIcon, InstagramIcon, EmailIcon } from './icons/SocialIcons';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface SocialLink {
   name: string;
@@ -12,6 +13,7 @@ interface SocialLink {
 
 export default function SocialLinks(): React.JSX.Element {
   const { theme } = useTheme();
+  const { t } = useLanguage();
 
   const iconClass = 'w-7 h-7';
 
@@ -41,7 +43,7 @@ export default function SocialLinks(): React.JSX.Element {
           href={link.href}
           target={link.href.startsWith('mailto:') ? undefined : '_blank'}
           rel={link.href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
-          aria-label={`Follow us on ${link.name}`}
+          aria-label={`${t('social.follow')} ${link.name}`}
           className={`transition-colors duration-200 ${
             theme === 'dark'
               ? 'text-[#9ca3af] hover:text-[#fbbf24]'

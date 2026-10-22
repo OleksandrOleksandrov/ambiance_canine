@@ -8,6 +8,9 @@ import 'lightgallery/css/lightgallery.css';
 import 'lightgallery/css/lg-zoom.css';
 import { Place } from "../../../types/index";
 import { useTheme } from "../../../contexts/ThemeContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
+import LanguageSwitcher from "../../../components/LanguageSwitcher";
+import { fetchApi } from "../../../lib/api";
 
 function formatPhoneNumber(phone: string): string {
   return phone.replace(
@@ -24,8 +27,37 @@ export default function PlaceDetailView({
   place,
 }: PlaceDetailViewProps) {
   const { theme } = useTheme();
+  const { language, t } = useLanguage();
+  const [displayedPlace, setDisplayedPlace] = React.useState(place);
+  const [contentError, setContentError] = React.useState<string | null>(null);
   const isDark = theme === "dark";
 
+  useEffect(() => {
+    let active = true;
+    const loadLocalizedPlace = async () => {
+      try {
+        const localizedPlace = await fetchApi<Place>(
+          `/api/places/${encodeURIComponent(place.id)}?lang=${language}`
+        );
+        if (active) {
+          setDisplayedPlace(localizedPlace);
+          setContentError(null);
+        }
+      } catch (error) {
+        if (active) {
+          setContentError(
+            error instanceof Error ? error.message : "Unable to load this location."
+          );
+        }
+      }
+    };
+    loadLocalizedPlace();
+    return () => {
+      active = false;
+    };
+  }, [place.id, language]);
+
+  const localizedPlace = displayedPlace;
   const pageBg = isDark
     ? "bg-gradient-to-b from-[#1f2937] to-[#111827] text-white"
     : "bg-gradient-to-b from-amber-50 to-white text-neutral-900";
@@ -40,9 +72,9 @@ export default function PlaceDetailView({
     ? "bg-[#f59e0b] hover:bg-[#fbbf24] text-black"
     : "bg-amber-600 hover:bg-amber-700 text-white";
 
-  const availableGroomers = place.groomers;
-  const photos = place.photos ?? [];
-  const phoneNumbers = place.phone_number ?? [];
+  const availableGroomers = localizedPlace.groomers;
+  const photos = localizedPlace.photos ?? [];
+  const phoneNumbers = localizedPlace.phone_number ?? [];
 
   const galleryRef = useRef<HTMLDivElement>(null);
   const lightGalleryInstance = useRef<ReturnType<typeof lightGallery> | null>(null);
@@ -70,26 +102,34 @@ export default function PlaceDetailView({
   return (
     <main className={`min-h-screen ${pageBg}`}>
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <Link
-          href="/"
-          className={`inline-flex items-center gap-2 text-sm font-medium ${backLink} transition mb-0`}
-        >
-          <span aria-hidden>←</span>
-          <span>Back</span>
-        </Link>
+        <div className="mb-4 flex items-center justify-between">
+          <Link
+            href="/"
+            className={`inline-flex items-center gap-2 text-sm font-medium ${backLink} transition`}
+          >
+            <span aria-hidden>←</span>
+            <span>{t("common.back")}</span>
+          </Link>
+          <LanguageSwitcher />
+        </div>
 
         <div className="text-center mb-8">
           <h1 className={`text-5xl font-serif font-bold mb-4 ${heading}`}>
-            {place.title}
+            {localizedPlace.title}
           </h1>
         </div>
+        {contentError && (
+          <p role="alert" className="mb-4 text-center text-red-600">
+            {contentError}
+          </p>
+        )}
 
         {/* Header image */}
         <div className="relative h-100 rounded-3xl overflow-hidden shadow-xl mb-12">
           {photos.length > 0 && (
             <img
               src={photos[0]}
-              alt={place.title}
+              alt={localizedPlace.title}
               className="w-full h-full object-cover"
             />
           )}
@@ -104,18 +144,18 @@ export default function PlaceDetailView({
               <span className="text-2xl">📍</span>
               <div className="w-full">
                 <div>
-                  <p className={`text-sm font-medium ${textMuted}`}>Address</p>
-                  <p className={heading}>{place.address}</p>
+                  <p className={`text-sm font-medium ${textMuted}`}>{t("common.address")}</p>
+                  <p className={heading}>{localizedPlace.address}</p>
                 </div>
-                {place.addressLink && (
+                {localizedPlace.addressLink && (
                   <a
-                    href={place.addressLink}
+                    href={localizedPlace.addressLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`mt-3 ml-auto flex w-fit items-center justify-center gap-2 px-4 py-2 ${buttonBg} rounded-lg text-sm font-medium transition`}
                   >
                     <span>🗺️</span>
-                    <span>View on Google Maps</span>
+                    <span>{t("common.viewMaps")}</span>
                   </a>
                 )}
               </div>
@@ -126,7 +166,7 @@ export default function PlaceDetailView({
             >
               <span className="text-2xl">📞</span>
               <div className="w-full">
-                <p className={`text-sm font-medium ${textMuted}`}>Contact</p>
+                <p className={`text-sm font-medium ${textMuted}`}>{t("common.contact")}</p>
                 <div className="mt-1 space-y-1">
                   {phoneNumbers.map((phone) => (
                     <a
@@ -141,15 +181,15 @@ export default function PlaceDetailView({
               </div>
             </div>
 
-            {place.placesCalled && (
+            {localizedPlace.placesCalled && (
               <div
                 className={`flex items-start space-x-4 p-4 rounded-xl shadow-sm border ${cardBg}`}
               >
                 <span className="text-2xl">🌟</span>
                 <div>
-                  <p className={`text-sm font-medium ${textMuted}`}>Known for</p>
+                  <p className={`text-sm font-medium ${textMuted}`}>{t("common.knownFor")}</p>
                   <p className={`italic ${heading}`}>
-                    &quot;{place.placesCalled}&quot;
+                    &quot;{localizedPlace.placesCalled}&quot;
                   </p>
                 </div>
               </div>
@@ -161,7 +201,7 @@ export default function PlaceDetailView({
               <h2
                 className={`text-3xl font-serif font-bold text-center mb-8 ${heading}`}
               >
-                Available Groomers
+                {t("common.groomers")}
               </h2>
               {availableGroomers.length > 0 ? (
                 <div className="flex flex-col gap-4">
@@ -180,8 +220,8 @@ export default function PlaceDetailView({
                       <div>
                         <h3 className={`font-semibold ${heading}`}>{groomer.name}</h3>
                         <p className={`text-xs mt-1 ${textMuted}`}>
-                          Works at {groomer.placesIds.length}{" "}
-                          {groomer.placesIds.length === 1 ? "location" : "locations"}
+                          {t("common.worksAt")} {groomer.placesIds.length}{" "}
+                          {groomer.placesIds.length === 1 ? t("common.location_one") : t("common.location_many")}
                         </p>
                       </div>
                     </div>
@@ -189,7 +229,7 @@ export default function PlaceDetailView({
                 </div>
               ) : (
                 <p className={`text-center ${textMuted}`}>
-                  No groomers are currently assigned to this location.
+                  {t("common.noGroomers")}
                 </p>
               )}
             </div>
@@ -202,7 +242,7 @@ export default function PlaceDetailView({
             <h3
               className={`text-sm font-semibold uppercase mb-4 ${textMuted}`}
             >
-              Gallery
+              {t("gallery.title")}
             </h3>
             <div ref={galleryRef} className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {photos.map((photo) => (

@@ -8,12 +8,14 @@ import "lightgallery/css/lightgallery.css";
 import "lightgallery/css/lg-thumbnail.css";
 import "lightgallery/css/lg-zoom.css";
 import { useTheme } from "../contexts/ThemeContext";
+import { useLanguage } from "../contexts/LanguageContext";
 import { fetchApi } from "../lib/api";
 import { GalleryData } from "../types";
 import { GalleryCardSkeleton } from "./Skeleton";
 
 export default function Gallery(): React.JSX.Element {
   const { theme } = useTheme();
+  const { language, t } = useLanguage();
   const galleryRef = useRef<HTMLDivElement>(null);
   const lightGalleryInstance = useRef<ReturnType<typeof lightGallery> | null>(
     null
@@ -26,11 +28,11 @@ export default function Gallery(): React.JSX.Element {
     let active = true;
     const loadImages = async () => {
       try {
-        const data = await fetchApi<GalleryData>("/api/gallery");
+        const data = await fetchApi<GalleryData>(`/api/gallery?lang=${language}`);
         if (active) setImages(data.images);
       } catch (err) {
         if (active) {
-          setError(err instanceof Error ? err.message : "Unable to load gallery.");
+          setError(err instanceof Error ? err.message : t("common.loadingGallery"));
         }
       } finally {
         if (active) setLoading(false);
@@ -40,7 +42,7 @@ export default function Gallery(): React.JSX.Element {
     return () => {
       active = false;
     };
-  }, []);
+  }, [language, t]);
 
   useEffect(() => {
     if (!galleryRef.current) return;
@@ -60,7 +62,7 @@ export default function Gallery(): React.JSX.Element {
       gallery.destroy();
       lightGalleryInstance.current = null;
     };
-  }, [images.length]);
+  }, [images]);
 
   const bgClass = theme === "dark" ? "bg-[#111827]" : "bg-neutral-100";
   const titleColor = theme === "dark" ? "text-[#f3f4f6]" : "text-neutral-900";
@@ -71,10 +73,10 @@ export default function Gallery(): React.JSX.Element {
       <div className="w-full px-4">
         <div className="text-center mb-6">
           <h2 className={`text-3xl font-serif font-bold ${titleColor}`}>
-            Salon Gallery
+            {t("gallery.title")}
           </h2>
           <p className={`${subColor} mt-2`}>
-            Moments of care, grooming, and styling
+            {t("gallery.subtitle")}
           </p>
         </div>
         {loading && (

@@ -7,6 +7,7 @@ import useEmblaCarousel from "embla-carousel-react";
 import Accessibility from "embla-carousel-accessibility";
 import type { EmblaCarouselType } from "embla-carousel";
 import { useTheme } from "../contexts/ThemeContext";
+import { useLanguage } from "../contexts/LanguageContext";
 import { fetchApi } from "../lib/api";
 import type { CertificatesData, Certificate } from "../types";
 import { CertificateSlideSkeleton } from "./Skeleton";
@@ -37,6 +38,7 @@ const useAccessibility = (emblaApi: EmblaCarouselType | undefined): void => {
 
 export default function Certificates(): React.JSX.Element {
   const { theme } = useTheme();
+  const { language, t } = useLanguage();
   const isDark = theme === "dark";
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -63,12 +65,12 @@ export default function Certificates(): React.JSX.Element {
     let active = true;
     const loadCertificates = async () => {
       try {
-        const data = await fetchApi<CertificatesData>("/api/certificates");
+        const data = await fetchApi<CertificatesData>(`/api/certificates?lang=${language}`);
         if (active) setCertificates(data.certificates);
       } catch (err) {
         if (active) {
           setError(
-            err instanceof Error ? err.message : "Unable to load certificates."
+            err instanceof Error ? err.message : t("common.loadingCertificates")
           );
         }
       } finally {
@@ -79,7 +81,7 @@ export default function Certificates(): React.JSX.Element {
     return () => {
       active = false;
     };
-  }, []);
+  }, [language, t]);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -133,13 +135,13 @@ export default function Certificates(): React.JSX.Element {
             className={`text-3xl md:text-4xl font-serif font-bold ${isDark ? "text-[#f3f4f6]" : "text-neutral-900"
               }`}
           >
-            Gift Certificates
+            {t("certificates.title")}
           </h2>
           <p
             className={`mt-2 text-lg ${isDark ? "text-[#9ca3af]" : "text-neutral-500"
               }`}
           >
-            Give a moment of care and relaxation.
+            {t("certificates.subtitle")}
           </p>
         </div>
       </div>
@@ -168,7 +170,7 @@ export default function Certificates(): React.JSX.Element {
                     <Link
                       href="/certificates"
                       className="group block rounded-xl overflow-hidden"
-                      aria-label="View all gift certificates"
+                      aria-label={t("certificates.viewAll")}
                     >
                       <div className="relative bg-neutral-200 rounded-xl overflow-hidden aspect-[3/2] flex items-center justify-center">
                         <Image
@@ -234,7 +236,7 @@ export default function Certificates(): React.JSX.Element {
           <div className="embla__controls mt-4 flex flex-col items-center gap-2">
             <div
               className="embla__dots flex justify-center gap-2"
-              aria-label="Certificate slides"
+              aria-label={t("certificates.slides")}
             >
               {scrollSnaps.map((_, index) => (
                 <button
