@@ -78,18 +78,24 @@ async def _batch_get_keys(table_key, keys):
     return response.get("Responses", {}).get(table_name, [])
 
 
-def _format_groomer(row):
+def _localized_value(row, field, language):
+    translations = row.get("translations") or {}
+    localized = translations.get(language) or {}
+    return localized.get(field, row.get(field))
+
+
+def _format_groomer(row, language="fr"):
     return {
         "id": str(row["id"]),
         "key": row["key"],
         "name": row["name"],
         "placesIds": [str(v) for v in row.get("place_ids") or []],
         "photo": row.get("photo"),
-        "specialty": row.get("specialty"),
+        "specialty": _localized_value(row, "specialty", language),
     }
 
 
-def _format_place(row, groomer_lookup):
+def _format_place(row, groomer_lookup, language="fr"):
     groomer_ids = row.get("groomer_ids") or []
     groomers = [
         groomer_lookup[gid]
@@ -99,25 +105,25 @@ def _format_place(row, groomer_lookup):
     return {
         "id": str(row["id"]),
         "key": row["key"],
-        "title": row["title"],
-        "place": row["place"],
+        "title": _localized_value(row, "title", language),
+        "place": _localized_value(row, "place", language),
         "phone_number": row.get("phone_number") or [],
         "photos": row.get("photos") or [],
         "groomers": groomers,
-        "address": row.get("address"),
+        "address": _localized_value(row, "address", language),
         "addressLink": row.get("address_link"),
-        "placesCalled": row.get("places_called"),
+        "placesCalled": _localized_value(row, "places_called", language),
     }
 
 
-def _format_service(row):
+def _format_service(row, language="fr"):
     media = row.get("media", []) or []
     return {
         "id": str(row["id"]),
         "key": row["key"],
-        "title": row["title"],
-        "subtitle": row.get("subtitle"),
-        "description": row.get("description"),
+        "title": _localized_value(row, "title", language),
+        "subtitle": _localized_value(row, "subtitle", language),
+        "description": _localized_value(row, "description", language),
         "icon": row.get("icon"),
         "image": row.get("image_url"),
         "afterImage": row.get("after_image_url"),
@@ -128,29 +134,29 @@ def _format_service(row):
                 "url": item.get("url"),
                 "mediaType": item.get("media_type", "image"),
                 "role": item.get("role", "primary"),
-                "alt": item.get("alt_text"),
+                "alt": _localized_value(item, "alt_text", language),
             }
             for item in media
         ],
     }
 
 
-def _format_gallery_image(row):
+def _format_gallery_image(row, language="fr"):
     return {
         "id": int(row["id"]),
-        "name": row["name"],
-        "alt": row.get("alt_text"),
+        "name": _localized_value(row, "name", language),
+        "alt": _localized_value(row, "alt_text", language),
         "url": row.get("photo_url"),
     }
 
 
-def _format_certificate(row):
+def _format_certificate(row, language="fr"):
     return {
         "id": str(row["id"]),
         "key": row["key"],
         "src": row["src"],
-        "alt": row["alt"],
-        "description": row.get("description"),
+        "alt": _localized_value(row, "alt", language),
+        "description": _localized_value(row, "description", language),
         "locale": row.get("locale", "fr"),
     }
 
@@ -181,7 +187,7 @@ async def database_is_healthy():
         return False
 
 
-async def get_places_from_db():
+async def get_places_from_db(language="fr"):
     place_items = await _query_active_ordered("places")
     all_groomer_ids = set()
     for place in place_items:
@@ -189,11 +195,11 @@ async def get_places_from_db():
     groomer_items = await _batch_get_keys("groomers", list(all_groomer_ids))
     groomer_lookup = {}
     for g in sorted(groomer_items, key=lambda x: x.get("sort_key", "")):
-        groomer_lookup[g["id"]] = _format_groomer(g)
-    return [_format_place(place, groomer_lookup) for place in place_items]
+        groomer_lookup[g["id"]] = _format_groomer(g, language)
+    return [_format_place(place, groomer_lookup, language) for place in place_items]
 
 
-async def get_place_from_db(place_id):
+async def get_place_from_db(place_id, language="fr"):
     table = _get_table("places")
     response = table.get_item(
         Key={"id": str(place_id)},
@@ -210,29 +216,29 @@ async def get_place_from_db(place_id):
         groomer_items, key=lambda x: x.get("sort_key", "")
     )
     groomer_lookup = {
-        g["id"]: _format_groomer(g) for g in sorted_groomers
+        g["id"]: _format_groomer(g, language) for g in sorted_groomers
     }
-    return _format_place(item, groomer_lookup)
+    return _format_place(item, groomer_lookup, language)
 
 
-async def get_groomers_from_db():
+async def get_groomers_from_db(language="fr"):
     groomer_items = await _query_active_ordered("groomers")
-    return [_format_groomer(g) for g in groomer_items]
+    return [_format_groomer(g, language) for g in groomer_items]
 
 
-async def get_services_from_db():
+async def get_services_from_db(language="fr"):
     service_items = await _query_active_ordered("services")
-    return [_format_service(s) for s in service_items]
+    return [_format_service(s, language) for s in service_items]
 
 
-async def get_gallery_images_from_db():
+async def get_gallery_images_from_db(language="fr"):
     photo_items = await _query_active_ordered("gallery")
-    return [_format_gallery_image(p) for p in photo_items]
+    return [_format_gallery_image(p, language) for p in photo_items]
 
 
-async def get_certificates_from_db():
+async def get_certificates_from_db(language="fr"):
     cert_items = await _query_active_ordered("certificates")
-    return [_format_certificate(c) for c in cert_items]
+    return [_format_certificate(c, language) for c in cert_items]
 
 
 def get_db_config_from_terraform():

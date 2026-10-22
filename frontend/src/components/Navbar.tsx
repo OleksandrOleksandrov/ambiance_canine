@@ -4,11 +4,14 @@ import React from 'react';
 import { Lottie } from 'lottie-react';
 import dogPawAnimation from '../assets/dog-paw-walk.json';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { BRAND_NAME } from '../constants/strings';
 import SocialLinks from './SocialLinks';
+import LanguageSwitcher from './LanguageSwitcher';
 
 function ThemeToggle(): React.JSX.Element {
   const { theme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
   const isDark = theme === 'dark';
 
   return (
@@ -17,7 +20,7 @@ function ThemeToggle(): React.JSX.Element {
       className={`relative inline-flex h-7 w-14 shrink-0 cursor-pointer items-center rounded-full p-1 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 ${
         isDark ? 'bg-slate-800' : 'bg-amber-100'
       }`}
-      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+      aria-label={isDark ? t('navbar.lightMode') : t('navbar.darkMode')}
     >
       {/* Background Track Icons */}
       <div className="absolute inset-0 flex items-center justify-between px-1.5 pointer-events-none">
@@ -78,6 +81,7 @@ function ThemeToggle(): React.JSX.Element {
 
 export default function Navbar(): React.JSX.Element {
   const { theme } = useTheme();
+  const { t } = useLanguage();
 
   const baseClasses = theme === 'dark' 
     ? 'sticky top-0 z-50 bg-[#1f2937]/95 backdrop-blur-md border-b border-[#4b5563] text-white' 
@@ -94,7 +98,7 @@ export default function Navbar(): React.JSX.Element {
                 {BRAND_NAME}
               </h1>
               <p className={`${theme === 'dark' ? 'text-[#f59e0b]' : 'text-amber-600'} font-medium tracking-wide text-xs mt-0.5`}>
-                {theme === 'dark' ? 'PARADISE' : 'PARADISE DES'} ANIMAUX
+                {t('navbar.paradise')}
               </p>
             </div>
           </a>
@@ -102,19 +106,25 @@ export default function Navbar(): React.JSX.Element {
           <div className="flex items-center gap-4 md:gap-6 lg:gap-8">
             <nav className="hidden md:flex md:space-x-6 lg:space-x-8 text-sm font-medium">
               <a href="#services" className={`${theme === 'dark' ? 'hover:text-[#fbbf24] text-[#d1d5db]' : 'hover:text-amber-600 text-neutral-600'} transition-colors`}>
-                Services
+                {t('navbar.services')}
               </a>
               <a href="#gallery" className={`${theme === 'dark' ? 'hover:text-[#fbbf24] text-[#d1d5db]' : 'hover:text-amber-600 text-neutral-600'} transition-colors`}>
-                Gallery
+                {t('navbar.gallery')}
               </a>
               <a href="#locations" className={`${theme === 'dark' ? 'hover:text-[#fbbf24] text-[#f59e0b]' : 'hover:text-amber-600 text-neutral-800'} transition-colors font-bold`}>
-                Book Visit
+                {t('navbar.bookVisit')}
               </a>
             </nav>
 
-            <SocialLinks />
+            <div className="hidden md:block">
+              <SocialLinks />
+            </div>
+            <LanguageSwitcher />
             <ThemeToggle />
           </div>
+        </div>
+        <div className="mt-4 flex justify-center md:hidden">
+          <SocialLinks />
         </div>
       </div>
     </header>

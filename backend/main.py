@@ -1,7 +1,7 @@
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from db import (
@@ -70,9 +70,11 @@ async def health():
 
 
 @app.get("/api/services")
-async def services():
+async def services(
+    language: str = Query("fr", alias="lang", pattern="^(fr|uk|ru|en)$")
+):
     try:
-        return await get_services_from_db()
+        return await get_services_from_db(language)
     except Exception as exc:
         raise HTTPException(
             status_code=503,
@@ -81,11 +83,13 @@ async def services():
 
 
 @app.get("/api/places")
-async def places():
+async def places(
+    language: str = Query("fr", alias="lang", pattern="^(fr|uk|ru|en)$")
+):
     try:
         return {
-            "places": await get_places_from_db(),
-            "groomers": await get_groomers_from_db(),
+            "places": await get_places_from_db(language),
+            "groomers": await get_groomers_from_db(language),
         }
     except Exception as exc:
         raise HTTPException(
@@ -95,9 +99,12 @@ async def places():
 
 
 @app.get("/api/places/{place_id}")
-async def place(place_id: str):
+async def place(
+    place_id: str,
+    language: str = Query("fr", alias="lang", pattern="^(fr|uk|ru|en)$"),
+):
     try:
-        result = await get_place_from_db(place_id)
+        result = await get_place_from_db(place_id, language)
     except Exception as exc:
         raise HTTPException(
             status_code=503,
@@ -109,9 +116,11 @@ async def place(place_id: str):
 
 
 @app.get("/api/gallery")
-async def gallery():
+async def gallery(
+    language: str = Query("fr", alias="lang", pattern="^(fr|uk|ru|en)$")
+):
     try:
-        return {"images": await get_gallery_images_from_db()}
+        return {"images": await get_gallery_images_from_db(language)}
     except Exception as exc:
         raise HTTPException(
             status_code=503,
@@ -120,9 +129,11 @@ async def gallery():
 
 
 @app.get("/api/certificates")
-async def certificates():
+async def certificates(
+    language: str = Query("fr", alias="lang", pattern="^(fr|uk|ru|en)$")
+):
     try:
-        return {"certificates": await get_certificates_from_db()}
+        return {"certificates": await get_certificates_from_db(language)}
     except Exception as exc:
         raise HTTPException(
             status_code=503,
