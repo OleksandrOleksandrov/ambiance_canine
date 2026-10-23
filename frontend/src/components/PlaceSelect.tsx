@@ -136,6 +136,14 @@ const PlaceItem: React.FC<PlaceItemProps> = ({ place }) => {
               </svg>
               <span>{t("locations.view")}</span>
             </a>
+            {place.bookingLink && (
+              <a
+                href={place.bookingLink}
+                className={`inline-flex items-center gap-2 px-5 py-2.5 ${buttonBg} transition-colors text-xs font-semibold rounded-xl`}
+              >
+                <span>{t("navbar.bookVisit")}</span>
+              </a>
+            )}
           </div>
         </div>
       </div>
