@@ -18,7 +18,7 @@ PLACES = [
             "https://ambiance-s3-bucket.s3.us-east-1.amazonaws.com/saloon/image_place_cagnes_sur_mer_11.jpg",
             "https://ambiance-s3-bucket.s3.us-east-1.amazonaws.com/saloon/image_place_cagnes_sur_mer_12.jpg",
         ],
-        "address": "16 Avenue. de Verdun, Cagnes sur Mer",
+        "address": "16 Avenue. de Verdun, Cagnes-sur-Mer",
         "address_link": "https://www.google.com/maps/search/?api=1&query=64+Bd+Marechal+Juin,+06800+Cages-sur-Mer",
         "groomer_ids": ["natasha", "julia", "olga"],
         "booking_link": "https://n997126.alteg.io/company/944815/personal/select-master?o=",
@@ -192,66 +192,44 @@ LOCALIZED_CONTENT = {
             "en": {
                 "title": "Cagnes-sur-Mer",
                 "place": "Cagnes-sur-Mer",
-                "address": "64 Boulevard Maréchal Juin, 06800 Cagnes-sur-Mer",
+                "address": "16 Avenue. de Verdun, Cagnes-sur-Mer",
             },
             "fr": {
                 "title": "Cagnes-sur-Mer",
                 "place": "Cagnes-sur-Mer",
-                "address": "64 Boulevard Maréchal Juin, 06800 Cagnes-sur-Mer",
+                "address": "16 Avenue. de Verdun, Cagnes-sur-Mer",
             },
             "uk": {
                 "title": "Cagnes-sur-Mer",
                 "place": "Cagnes-sur-Mer",
-                "address": "64 Boulevard Maréchal Juin, 06800 Cagnes-sur-Mer",
+                "address": "16 Avenue. de Verdun, Cagnes-sur-Mer",
             },
             "ru": {
                 "title": "Cagnes-sur-Mer",
                 "place": "Cagnes-sur-Mer",
-                "address": "64 Boulevard Maréchal Juin, 06800 Cagnes-sur-Mer",
-            },
-        },
-        "cagnes-sur-mer-new": {
-            "en": {
-                "title": "Cagnes-sur-Mer",
-                "place": "Cagnes-sur-Mer",
-                "address": "Cagnes-sur-Mer",
-            },
-            "fr": {
-                "title": "Cagnes-sur-Mer",
-                "place": "Cagnes-sur-Mer",
-                "address": "Cagnes-sur-Mer",
-            },
-            "uk": {
-                "title": "Cagnes-sur-Mer",
-                "place": "Cagnes-sur-Mer",
-                "address": "Cagnes-sur-Mer",
-            },
-            "ru": {
-                "title": "Cagnes-sur-Mer",
-                "place": "Cagnes-sur-Mer",
-                "address": "Cagnes-sur-Mer",
+                "address": "16 Avenue. de Verdun, Cagnes-sur-Mer",
             },
         },
         "nice": {
             "en": {
                 "title": "Nice",
                 "place": "Nice",
-                "address": "5 Rue Vernier, 06000 Nice",
+                "address": "5 Rue Vernier, Nice",
             },
             "fr": {
                 "title": "Nice",
                 "place": "Nice",
-                "address": "5 Rue Vernier, 06000 Nice",
+                "address": "5 Rue Vernier, Nice",
             },
             "uk": {
                 "title": "Nice",
                 "place": "Nice",
-                "address": "5 Rue Vernier, 06000 Nice",
+                "address": "5 Rue Vernier, Nice",
             },
             "ru": {
                 "title": "Nice",
                 "place": "Nice",
-                "address": "5 Rue Vernier, 06000 Nice",
+                "address": "5 Rue Vernier, Nice",
             },
         },
     },
