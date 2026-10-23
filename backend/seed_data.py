@@ -254,13 +254,19 @@ LOCALIZED_CONTENT = {
         },
     },
     "groomers": {
-        "oleksandr": {
+        "julia": {
             "en": {"specialty": "Creative grooming, show grooming"},
             "fr": {"specialty": "Toilettage créatif, toilettage d’exposition"},
             "uk": {"specialty": "Креативний грумінг, виставковий грумінг"},
             "ru": {"specialty": "Креативный груминг, выставочный груминг"},
         },
         "natasha": {
+            "en": {"specialty": "Dental care, spa therapy"},
+            "fr": {"specialty": "Soins dentaires, thérapie spa"},
+            "uk": {"specialty": "Догляд за зубами, спа-терапія"},
+            "ru": {"specialty": "Уход за зубами, спа-терапия"},
+        },
+        "olga": {
             "en": {"specialty": "Dental care, spa therapy"},
             "fr": {"specialty": "Soins dentaires, thérapie spa"},
             "uk": {"specialty": "Догляд за зубами, спа-терапія"},
