@@ -28,11 +28,11 @@ export default function SocialLinks(): React.JSX.Element {
       href: 'https://www.instagram.com/toilettage.des.animaux',
       icon: <InstagramIcon className={iconClass} />,
     },
-    {
-      name: 'Email',
-      href: 'mailto:grooming.fr.nat@gmail.com',
-      icon: <EmailIcon className={iconClass} />,
-    },
+    // {
+    //   name: 'Email',
+    //   href: 'mailto:grooming.fr.nat@gmail.com',
+    //   icon: <EmailIcon className={iconClass} />,
+    // },
   ];
 
   return (
@@ -44,11 +44,10 @@ export default function SocialLinks(): React.JSX.Element {
           target={link.href.startsWith('mailto:') ? undefined : '_blank'}
           rel={link.href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
           aria-label={`${t('social.follow')} ${link.name}`}
-          className={`transition-colors duration-200 ${
-            theme === 'dark'
+          className={`transition-colors duration-200 ${theme === 'dark'
               ? 'text-[#9ca3af] hover:text-[#fbbf24]'
               : 'text-neutral-400 hover:text-amber-600'
-          }`}
+            }`}
         >
           {link.icon}
         </a>
