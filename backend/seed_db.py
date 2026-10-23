@@ -112,6 +112,7 @@ def put_places(dynamodb, data=SEED_DATA):
                 "place": place["place"],
                 "address": place.get("address"),
                 "address_link": place.get("address_link"),
+                "booking_link": place.get("booking_link"),
                 "places_called": place.get("places_called"),
                 "translations": place.get("translations", {}),
                 "phone_number": place.get("phone_number", []),

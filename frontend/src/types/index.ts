@@ -8,6 +8,7 @@ export interface Place {
   groomers: Groomer[];
   address: string | null;
   addressLink: string | null;
+  bookingLink: string | null;
   placesCalled?: string | null;
 }
 
