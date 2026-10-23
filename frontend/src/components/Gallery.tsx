@@ -2,10 +2,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import lightGallery from "lightgallery";
-import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
 import "lightgallery/css/lightgallery.css";
-import "lightgallery/css/lg-thumbnail.css";
 import "lightgallery/css/lg-zoom.css";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -48,13 +46,10 @@ export default function Gallery(): React.JSX.Element {
     if (!galleryRef.current) return;
 
     const gallery = lightGallery(galleryRef.current, {
-      plugins: [lgThumbnail, lgZoom],
+      plugins: [lgZoom],
       speed: 500,
       download: false,
-      animateThumb: false,
       zoomFromOrigin: false,
-      allowMediaOverlap: true,
-      toggleThumb: true,
     });
     lightGalleryInstance.current = gallery;
 
