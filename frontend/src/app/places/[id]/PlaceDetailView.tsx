@@ -9,6 +9,13 @@ import 'lightgallery/css/lg-zoom.css';
 import { Place } from "../../../types/index";
 import { useTheme } from "../../../contexts/ThemeContext";
 
+function formatPhoneNumber(phone: string): string {
+  return phone.replace(
+    /^(\+33)(\d)(\d{2})(\d{2})(\d{2})(\d{2})$/,
+    "$1 $2 $3 $4 $5 $6",
+  );
+}
+
 interface PlaceDetailViewProps {
   place: Place;
 }
@@ -127,7 +134,7 @@ export default function PlaceDetailView({
                       href={`tel:${phone}`}
                       className={`block ${heading} hover:underline`}
                     >
-                      {phone}
+                      {formatPhoneNumber(phone)}
                     </a>
                   ))}
                 </div>
