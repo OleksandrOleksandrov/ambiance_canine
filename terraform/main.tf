@@ -357,11 +357,6 @@ resource "aws_lambda_function" "db_setup" {
   architectures    = ["arm64"]
   timeout          = 120
   tags             = local.common_tags
-  publish          = true
-
-  snap_start {
-    apply_on = "PublishedVersions"
-  }
 
   environment {
     variables = {
