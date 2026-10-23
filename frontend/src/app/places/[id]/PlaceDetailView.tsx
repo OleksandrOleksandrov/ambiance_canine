@@ -134,6 +134,16 @@ export default function PlaceDetailView({
             />
           )}
         </div>
+        {localizedPlace.bookingLink && (
+          <div className="-mt-8 mb-12 flex justify-center">
+            <a
+              href={localizedPlace.bookingLink}
+              className={`inline-flex items-center justify-center gap-2 px-6 py-3 ${buttonBg} rounded-lg text-sm font-semibold transition`}
+            >
+              {t("navbar.bookVisit")}
+            </a>
+          </div>
+        )}
 
         {/* Details */}
         <div className="grid md:grid-cols-2 gap-8 mb-12">

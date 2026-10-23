@@ -112,6 +112,7 @@ def _format_place(row, groomer_lookup, language="fr"):
         "groomers": groomers,
         "address": _localized_value(row, "address", language),
         "addressLink": row.get("address_link"),
+        "bookingLink": row.get("booking_link"),
         "placesCalled": _localized_value(row, "places_called", language),
     }
 
