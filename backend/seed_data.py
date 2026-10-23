@@ -18,9 +18,10 @@ PLACES = [
             "https://ambiance-s3-bucket.s3.us-east-1.amazonaws.com/saloon/image_place_cagnes_sur_mer_11.jpg",
             "https://ambiance-s3-bucket.s3.us-east-1.amazonaws.com/saloon/image_place_cagnes_sur_mer_12.jpg",
         ],
-        "address": "64 Boulevard Maréchal Juin, 06800 Cagnes-sur-Mer",
+        "address": "16 Avenue. de Verdun, Cagnes sur Mer",
         "address_link": "https://www.google.com/maps/search/?api=1&query=64+Bd+Marechal+Juin,+06800+Cages-sur-Mer",
         "groomer_ids": ["natasha", "julia", "olga"],
+        "booking_link": "https://n997126.alteg.io/company/944815/personal/select-master?o=",
     },
     {
         "key": "nice",
@@ -33,9 +34,10 @@ PLACES = [
             "https://ambiance-s3-bucket.s3.us-east-1.amazonaws.com/saloon_nice/image_place_nice_3.jpg",
             "https://ambiance-s3-bucket.s3.us-east-1.amazonaws.com/saloon_nice/image_place_nice_4.jpg",
         ],
-        "address": "5 Rue Vernier, 06000 Nice",
+        "address": "5 Rue Vernier, Nice",
         "address_link": "https://www.google.com/maps/search/?api=1&query=5+Rue+Vernier,+06000+Nice",
         "groomer_ids": ["natasha", "julia"],
+        "booking_link": "https://n1412458.alteg.io/company/1344509/personal/select-master?o=",
     },
 ]
 
