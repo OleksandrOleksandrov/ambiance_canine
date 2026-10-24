@@ -542,11 +542,12 @@ resource "aws_route53_record" "site_validation" {
     dvo.domain_name => dvo
   } : {}
 
-  zone_id = data.aws_route53_zone.root[0].zone_id
-  name    = each.value.resource_record_name
-  type    = each.value.resource_record_type
-  ttl     = 300
-  records = [each.value.resource_record_value]
+  zone_id         = data.aws_route53_zone.root[0].zone_id
+  name            = each.value.resource_record_name
+  type            = each.value.resource_record_type
+  ttl             = 300
+  records         = [each.value.resource_record_value]
+  allow_overwrite = true
 }
 
 resource "aws_acm_certificate_validation" "site" {
