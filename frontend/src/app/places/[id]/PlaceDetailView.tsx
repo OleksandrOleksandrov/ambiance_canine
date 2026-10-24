@@ -135,10 +135,10 @@ export default function PlaceDetailView({
           )}
         </div>
         {localizedPlace.bookingLink && (
-          <div className="-mt-8 mb-12 flex justify-center">
+          <div className="mt-4 mb-12 flex justify-center">
             <a
               href={localizedPlace.bookingLink}
-              className={`inline-flex items-center justify-center gap-2 px-6 py-3 ${buttonBg} rounded-lg text-sm font-semibold transition`}
+              className={`inline-flex w-full items-center justify-center gap-2 px-6 py-2.5 ${buttonBg} rounded-lg text-sm font-semibold transition`}
             >
               {t("navbar.bookVisit")}
             </a>
