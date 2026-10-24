@@ -7,6 +7,7 @@
 
 | Environment | URL | Description |
 |-------------|-----|-------------|
+| **Website** | https://paradise-des-animaux.com | Public website |
 | **Production** | https://d2sau9dzqlteyn.cloudfront.net | Current production deployment |
 | **Staging** | https://d8joa7g185i7f.cloudfront.net | Pre-production deployment |
 | **Development** | https://dmvf05834xcbi.cloudfront.net | Development deployment |
