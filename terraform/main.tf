@@ -515,6 +515,8 @@ resource "aws_cloudfront_distribution" "main" {
       restriction_type = "none"
     }
   }
+
+  depends_on = [aws_acm_certificate_validation.site]
 }
 
 # Optional: Custom domain configuration (only created when use_custom_domain = true)
