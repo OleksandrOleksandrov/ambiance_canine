@@ -560,10 +560,11 @@ resource "aws_acm_certificate_validation" "site" {
 }
 
 resource "aws_route53_record" "alias_root" {
-  count   = var.use_custom_domain ? 1 : 0
-  zone_id = data.aws_route53_zone.root[0].zone_id
-  name    = var.root_domain
-  type    = "A"
+  count           = var.use_custom_domain ? 1 : 0
+  zone_id         = data.aws_route53_zone.root[0].zone_id
+  name            = var.root_domain
+  type            = "A"
+  allow_overwrite = true
 
   alias {
     name                   = aws_cloudfront_distribution.main.domain_name
@@ -573,10 +574,11 @@ resource "aws_route53_record" "alias_root" {
 }
 
 resource "aws_route53_record" "alias_root_ipv6" {
-  count   = var.use_custom_domain ? 1 : 0
-  zone_id = data.aws_route53_zone.root[0].zone_id
-  name    = var.root_domain
-  type    = "AAAA"
+  count           = var.use_custom_domain ? 1 : 0
+  zone_id         = data.aws_route53_zone.root[0].zone_id
+  name            = var.root_domain
+  type            = "AAAA"
+  allow_overwrite = true
 
   alias {
     name                   = aws_cloudfront_distribution.main.domain_name
@@ -586,10 +588,11 @@ resource "aws_route53_record" "alias_root_ipv6" {
 }
 
 resource "aws_route53_record" "alias_www" {
-  count   = var.use_custom_domain ? 1 : 0
-  zone_id = data.aws_route53_zone.root[0].zone_id
-  name    = "www.${var.root_domain}"
-  type    = "A"
+  count           = var.use_custom_domain ? 1 : 0
+  zone_id         = data.aws_route53_zone.root[0].zone_id
+  name            = "www.${var.root_domain}"
+  type            = "A"
+  allow_overwrite = true
 
   alias {
     name                   = aws_cloudfront_distribution.main.domain_name
@@ -599,10 +602,11 @@ resource "aws_route53_record" "alias_www" {
 }
 
 resource "aws_route53_record" "alias_www_ipv6" {
-  count   = var.use_custom_domain ? 1 : 0
-  zone_id = data.aws_route53_zone.root[0].zone_id
-  name    = "www.${var.root_domain}"
-  type    = "AAAA"
+  count           = var.use_custom_domain ? 1 : 0
+  zone_id         = data.aws_route53_zone.root[0].zone_id
+  name            = "www.${var.root_domain}"
+  type            = "AAAA"
+  allow_overwrite = true
 
   alias {
     name                   = aws_cloudfront_distribution.main.domain_name
