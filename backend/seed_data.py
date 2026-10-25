@@ -24,6 +24,19 @@ PLACES = [
         "booking_link": "https://n997126.alteg.io/company/944815/personal/select-master?o=",
     },
     {
+        "key": "cagnes-sur-mer-new",
+        "title": "Cagnes-sur-Mer",
+        "place": "Cagnes-sur-Mer",
+        "phone_number": ["+33493735401", "+33745115270"],
+        "photos": [
+            "https://ambiance-s3-bucket.s3.us-east-1.amazonaws.com/saloon_nice/image_place_nice_4.jpg",
+        ],
+        "address": "64 Boulevard Maréchal Juin, Cagnes-sur-Mer",
+        "address_link": "https://maps.app.goo.gl/h17sFgNiyYd7FZyZ6",
+        "groomer_ids": ["natasha", "julia", "olga"],
+        "booking_link": "https://n997126.alteg.io/company/944815/personal/select-master?o=",
+    },
+    {
         "key": "nice",
         "title": "Nice",
         "place": "Nice",
@@ -210,6 +223,28 @@ LOCALIZED_CONTENT = {
                 "address": "16 Avenue. de Verdun, Cagnes-sur-Mer",
             },
         },
+        "cagnes-sur-mer-new": {
+            "en": {
+                "title": "Cagnes-sur-Mer",
+                "place": "Cagnes-sur-Mer",
+                "address": "64 Boulevard Maréchal Juin, Cagnes-sur-Mer",
+            },
+            "fr": {
+                "title": "Cagnes-sur-Mer",
+                "place": "Cagnes-sur-Mer",
+                "address": "64 Boulevard Maréchal Juin, Cagnes-sur-Mer",
+            },
+            "uk": {
+                "title": "Cagnes-sur-Mer",
+                "place": "Cagnes-sur-Mer",
+                "address": "64 Boulevard Maréchal Juin, Cagnes-sur-Mer",
+            },
+            "ru": {
+                "title": "Cagnes-sur-Mer",
+                "place": "Cagnes-sur-Mer",
+                "address": "64 Boulevard Maréchal Juin, Cagnes-sur-Mer",
+            },
+        },
         "nice": {
             "en": {
                 "title": "Nice",
@@ -389,7 +424,10 @@ for service in SERVICES:
 for index, image in enumerate(GALLERY_IMAGES, start=1):
     image["translations"] = {
         "en": {"name": f"Salon photo {index}", "alt_text": f"Salon photo {index}"},
-        "fr": {"name": f"Photo du salon {index}", "alt_text": f"Photo du salon {index}"},
+        "fr": {
+            "name": f"Photo du salon {index}",
+            "alt_text": f"Photo du salon {index}",
+        },
         "uk": {"name": f"Фото салону {index}", "alt_text": f"Фото салону {index}"},
         "ru": {"name": f"Фото салона {index}", "alt_text": f"Фото салона {index}"},
     }
