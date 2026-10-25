@@ -1,5 +1,5 @@
 project_name             = "ambiancecanine"
-environment              = "test"
+environment              = "staging"
 bedrock_model_id         = "amazon.nova-2-lite-v1:0"
 lambda_timeout           = 60
 api_throttle_burst_limit = 10

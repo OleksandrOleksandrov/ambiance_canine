@@ -4,6 +4,14 @@ set -euo pipefail
 ENVIRONMENT=${1:-dev}
 PROJECT_NAME=${2:-ambiancecanine}
 
+case "$ENVIRONMENT" in
+  dev|staging|prod) ;;
+  *)
+    printf 'Unsupported environment: %s. Available environments: dev, staging, prod\n' "$ENVIRONMENT" >&2
+    exit 1
+    ;;
+esac
+
 printf 'Deploying %s to %s...\n' "$PROJECT_NAME" "$ENVIRONMENT"
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -41,8 +49,8 @@ case "$ENVIRONMENT" in
   prod)
     terraform apply -var-file=prod.tfvars -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
     ;;
-  test)
-    terraform apply -var-file=test.tfvars -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
+  staging)
+    terraform apply -var-file=staging.tfvars -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
     ;;
   *)
     terraform apply -var-file=terraform.tfvars -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve

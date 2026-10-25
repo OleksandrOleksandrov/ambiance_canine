@@ -332,11 +332,11 @@ The API uses `CORS_ORIGINS` to configure browser access. Content endpoints are c
 5. Builds the Next.js static export with `NEXT_PUBLIC_API_URL` set to the deployed API Gateway URL.
 6. Syncs the export to the environment S3 bucket.
 
-Supported environments are `dev`, `test`, and `prod`:
+Supported environments are `dev`, `staging`, and `prod`:
 
 ```bash
 ./scripts/deploy.sh dev
-./scripts/deploy.sh test
+./scripts/deploy.sh staging
 ./scripts/deploy.sh prod
 ```
 
@@ -393,4 +393,4 @@ The `terraform/` directory provisions:
 - Lambda functions for the API and database setup
 - API Gateway HTTP API routes
 
-Environment-specific values are stored in `terraform.tfvars`, `test.tfvars`, and `prod.tfvars`. Sensitive values should be supplied through environment variables or CI secrets rather than committed Terraform variable files.
+Environment-specific values are stored in `terraform.tfvars`, `staging.tfvars`, and `prod.tfvars`. Sensitive values should be supplied through environment variables or CI secrets rather than committed Terraform variable files.
