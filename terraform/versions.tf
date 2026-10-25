@@ -4,7 +4,8 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 6.0"
+      # AWS provider 6.69.0 breaks Lambda ZIP uploads with "bufio.Scanner: token too long".
+      version = ">= 6.0, < 6.69.0"
     }
   }
 }

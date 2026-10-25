@@ -312,7 +312,7 @@ resource "aws_lambda_function" "api" {
   role             = aws_iam_role.lambda_role.arn
   handler          = "lambda_handler.handler"
   source_code_hash = filebase64sha256("${path.module}/../backend/lambda-api-deployment.zip")
-  runtime          = "python3.12"
+  runtime          = "python3.15"
   architectures    = ["arm64"]
   timeout          = var.lambda_timeout
   tags             = local.common_tags
@@ -353,7 +353,7 @@ resource "aws_lambda_function" "db_setup" {
   role             = aws_iam_role.lambda_role.arn
   handler          = "seed_db.lambda_handler"
   source_code_hash = filebase64sha256("${path.module}/../backend/lambda-db-setup-deployment.zip")
-  runtime          = "python3.12"
+  runtime          = "python3.15"
   architectures    = ["arm64"]
   timeout          = 120
   tags             = local.common_tags
