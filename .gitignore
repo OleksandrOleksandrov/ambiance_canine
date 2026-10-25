@@ -142,7 +142,7 @@ frontend/.env.*.local
 terraform.tfstate.d/
 *.tfvars
 !terraform.tfvars
-!test.tfvars
+!staging.tfvars
 !prod.tfvars
 
 # IDE & OS

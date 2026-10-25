@@ -6,12 +6,21 @@ if [ $# -eq 0 ]; then
     echo "❌ Error: Environment parameter is required"
     echo "Usage: $0 <environment>"
     echo "Example: $0 dev"
-    echo "Available environments: dev, test, prod"
+    echo "Available environments: dev, staging, prod"
     exit 1
 fi
 
 ENVIRONMENT=$1
 PROJECT_NAME=${2:-ambiancecanine}
+
+case "$ENVIRONMENT" in
+    dev|staging|prod) ;;
+    *)
+        echo "❌ Unsupported environment: $ENVIRONMENT"
+        echo "Available environments: dev, staging, prod"
+        exit 1
+        ;;
+esac
 
 echo "🗑️ Preparing to destroy ${PROJECT_NAME}-${ENVIRONMENT} infrastructure..."
 
@@ -84,9 +93,9 @@ case "$ENVIRONMENT" in
       terraform destroy -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
     fi
     ;;
-  test)
-    if [ -f "test.tfvars" ]; then
-      terraform destroy -var-file=test.tfvars -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
+  staging)
+    if [ -f "staging.tfvars" ]; then
+      terraform destroy -var-file=staging.tfvars -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
     else
       terraform destroy -var="project_name=$PROJECT_NAME" -var="environment=$ENVIRONMENT" -auto-approve
     fi
