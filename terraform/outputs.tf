@@ -23,9 +23,19 @@ output "lambda_function_name" {
   value       = aws_lambda_function.api.function_name
 }
 
+output "lambda_function_version" {
+  description = "Published version of the API Lambda function"
+  value       = aws_lambda_function.api.version
+}
+
 output "db_setup_lambda_function_name" {
   description = "Name of the database setup Lambda function"
   value       = aws_lambda_function.db_setup.function_name
+}
+
+output "db_setup_lambda_function_version" {
+  description = "Published version of the database setup Lambda function"
+  value       = aws_lambda_function.db_setup.version
 }
 
 output "custom_domain_url" {

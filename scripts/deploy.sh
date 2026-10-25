@@ -9,6 +9,58 @@ printf 'Deploying %s to %s...\n' "$PROJECT_NAME" "$ENVIRONMENT"
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT_DIR"
 
+prune_old_snapstart_versions() {
+  local function_name=$1
+  local keep_version=$2
+  local old_versions
+
+  old_versions=$(
+    aws lambda list-versions-by-function \
+      --function-name "$function_name" \
+      --output json |
+      python3 -c '
+import json
+import sys
+
+keep_version = sys.argv[1]
+versions = json.load(sys.stdin).get("Versions", [])
+current = next(
+    (version for version in versions if str(version.get("Version")) == keep_version),
+    None,
+)
+if current is None:
+    raise SystemExit(
+        f"Published version {keep_version} not found for {sys.argv[2]}."
+    )
+if (current.get("SnapStart") or {}).get("ApplyOn") != "PublishedVersions":
+    raise SystemExit(
+        f"Published version {keep_version} of {sys.argv[2]} is not SnapStart-enabled."
+    )
+
+old_versions = sorted(
+    (
+        str(version["Version"])
+        for version in versions
+        if str(version.get("Version")) not in ("$LATEST", keep_version)
+        and int(version["Version"]) < int(keep_version)
+        and (version.get("SnapStart") or {}).get("ApplyOn") == "PublishedVersions"
+    ),
+    key=int,
+)
+print("\n".join(old_versions))
+' "$keep_version" "$function_name"
+  )
+
+  while IFS= read -r version; do
+    if [ -n "$version" ]; then
+      printf 'Deleting old SnapStart version %s:%s...\n' "$function_name" "$version"
+      aws lambda delete-function \
+        --function-name "$function_name" \
+        --qualifier "$version"
+    fi
+  done <<< "$old_versions"
+}
+
 printf 'Building Lambda package...\n'
 (cd backend && uv run deploy.py)
 
@@ -52,6 +104,9 @@ esac
 API_URL=$(terraform output -raw api_gateway_url)
 FRONTEND_BUCKET=$(terraform output -raw s3_frontend_bucket)
 DB_SETUP_FUNCTION=$(terraform output -raw db_setup_lambda_function_name)
+DB_SETUP_VERSION=$(terraform output -raw db_setup_lambda_function_version)
+API_FUNCTION=$(terraform output -raw lambda_function_name)
+API_VERSION=$(terraform output -raw lambda_function_version)
 CUSTOM_URL=$(terraform output -raw custom_domain_url 2>/dev/null || true)
 
 DB_SETUP_RESPONSE="$(mktemp)"
@@ -91,6 +146,10 @@ if not isinstance(places, list) or not places:
     raise SystemExit("The deployed places API returned no active places.")
 PY
 rm -f "$PLACES_RESPONSE"
+
+printf 'Pruning old SnapStart Lambda versions...\n'
+prune_old_snapstart_versions "$API_FUNCTION" "$API_VERSION"
+prune_old_snapstart_versions "$DB_SETUP_FUNCTION" "$DB_SETUP_VERSION"
 
 cd ../frontend
 printf 'Building and deploying frontend...\n'
