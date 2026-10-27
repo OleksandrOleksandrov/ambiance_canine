@@ -361,6 +361,15 @@ resource "aws_lambda_function" "db_setup" {
   architectures    = ["arm64"]
   timeout          = 120
   tags             = local.common_tags
+  publish          = true
+
+  dynamic "snap_start" {
+    for_each = var.environment == "prod" ? [true] : []
+
+    content {
+      apply_on = "PublishedVersions"
+    }
+  }
 
   environment {
     variables = {
