@@ -318,8 +318,12 @@ resource "aws_lambda_function" "api" {
   tags             = local.common_tags
   publish          = true
 
-  snap_start {
-    apply_on = "PublishedVersions"
+  dynamic "snap_start" {
+    for_each = var.environment == "prod" ? [true] : []
+
+    content {
+      apply_on = "PublishedVersions"
+    }
   }
 
   environment {
