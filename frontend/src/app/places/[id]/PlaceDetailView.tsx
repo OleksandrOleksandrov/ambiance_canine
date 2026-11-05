@@ -11,6 +11,7 @@ import { useTheme } from "../../../contexts/ThemeContext";
 import { useLanguage } from "../../../contexts/LanguageContext";
 import LanguageSwitcher from "../../../components/LanguageSwitcher";
 import { fetchApi } from "../../../lib/api";
+import { InstagramIcon } from "../../../components/icons/SocialIcons";
 
 function formatPhoneNumber(phone: string): string {
   return phone.replace(
@@ -144,7 +145,6 @@ export default function PlaceDetailView({
             </a>
           </div>
         )}
-
         {/* Details */}
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           <div className="space-y-4">
@@ -243,6 +243,36 @@ export default function PlaceDetailView({
                 </p>
               )}
             </div>
+            {localizedPlace.instagramCollaboration?.url && (
+              <section className={`rounded-3xl p-8 shadow-sm border ${cardBg}`}>
+                <h2 className={`text-2xl font-serif font-bold text-center mb-6 ${heading}`}>
+                  {t("common.collaboration")}
+                </h2>
+                <a
+                  href={localizedPlace.instagramCollaboration.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`flex items-center gap-4 p-4 rounded-xl ${cardBgSoft} transition hover:ring-2 hover:ring-amber-400`}
+                >
+                  {localizedPlace.instagramCollaboration.avatarUrl && (
+                    <img
+                      src={localizedPlace.instagramCollaboration.avatarUrl}
+                      alt={localizedPlace.instagramCollaboration.name ?? ""}
+                      className="w-16 h-16 rounded-full object-cover border-2 border-amber-300"
+                    />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <h3 className={`font-semibold ${heading}`}>
+                      {localizedPlace.instagramCollaboration.name}
+                    </h3>
+                    <span className="mt-1 inline-flex items-center gap-2 text-sm text-amber-600 hover:underline">
+                      <InstagramIcon className="h-4 w-4 shrink-0" />
+                      {t("common.viewInstagram")}
+                    </span>
+                  </div>
+                </a>
+              </section>
+            )}
           </div>
 
           {/* Gallery */}

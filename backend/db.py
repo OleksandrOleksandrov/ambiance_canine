@@ -102,6 +102,7 @@ def _format_place(row, groomer_lookup, language="fr"):
         for gid in groomer_ids
         if gid in groomer_lookup
     ]
+    collaboration = row.get("instagram_collaboration")
     return {
         "id": str(row["id"]),
         "key": row["key"],
@@ -113,6 +114,11 @@ def _format_place(row, groomer_lookup, language="fr"):
         "address": _localized_value(row, "address", language),
         "addressLink": row.get("address_link"),
         "bookingLink": row.get("booking_link"),
+        "instagramCollaboration": {
+            "avatarUrl": collaboration.get("avatar_url"),
+            "name": collaboration.get("name"),
+            "url": collaboration.get("url"),
+        } if isinstance(collaboration, dict) else None,
         "placesCalled": _localized_value(row, "places_called", language),
     }
 
