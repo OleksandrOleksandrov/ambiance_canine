@@ -41,9 +41,12 @@ if current is None:
         f"Published version {keep_version} not found for {sys.argv[2]}."
     )
 if (current.get("SnapStart") or {}).get("ApplyOn") != "PublishedVersions":
-    raise SystemExit(
-        f"Published version {keep_version} of {sys.argv[2]} is not SnapStart-enabled."
+    print(
+        f"Skipping SnapStart version pruning for {sys.argv[2]}: "
+        f"published version {keep_version} is not SnapStart-enabled.",
+        file=sys.stderr,
     )
+    raise SystemExit(0)
 
 old_versions = sorted(
     (

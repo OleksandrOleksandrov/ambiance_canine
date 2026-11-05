@@ -9,7 +9,14 @@ export interface Place {
   address: string | null;
   addressLink: string | null;
   bookingLink: string | null;
+  instagramCollaboration?: InstagramCollaboration | null;
   placesCalled?: string | null;
+}
+
+export interface InstagramCollaboration {
+  avatarUrl: string | null;
+  name: string | null;
+  url: string | null;
 }
 
 export interface Groomer {

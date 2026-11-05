@@ -329,7 +329,7 @@ The API uses `CORS_ORIGINS` to configure browser access. Content endpoints are c
 2. Initializes the Terraform S3 backend and selects the requested workspace.
 3. Applies the environment-specific Terraform configuration.
 4. Invokes the database setup Lambda.
-5. Verifies the deployed API and deletes older SnapStart-enabled published versions of both Lambda functions, keeping each version created by the current Terraform deployment and any newer versions.
+5. Verifies the deployed API and deletes older SnapStart-enabled published versions of both Lambda functions when the current version is SnapStart-enabled; otherwise, version pruning is skipped.
 6. Builds the Next.js static export with `NEXT_PUBLIC_API_URL` set to the deployed API Gateway URL.
 7. Syncs the export to the environment S3 bucket.
 

@@ -38,6 +38,11 @@ PLACES = [
         "address_link": "https://maps.app.goo.gl/b5T2FFyCL8KUbRpKA",
         "groomer_ids": ["natasha", "julia"],
         "booking_link": "https://n1412458.alteg.io/company/1344509/personal/select-master?o=",
+        "instagram_collaboration": {
+            "avatar_url": "https://ambiance-s3-bucket.s3.us-east-1.amazonaws.com/groomer/physio_vet.jpg",
+            "url": "https://www.instagram.com/physiovet_vb",
+            "name": "PhysioVet VB",
+        },
     },
 ]
 
