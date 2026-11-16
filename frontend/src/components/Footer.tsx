@@ -15,6 +15,9 @@ export default function Footer(): React.JSX.Element {
           <div className="text-center sm:text-left">
             <p className={theme === 'dark' ? 'text-neutral-300' : 'text-neutral-400'}>© {new Date().getFullYear()} {t('footer.copyright')}</p>
             <p className={theme === 'dark' ? 'text-neutral-400 text-xs mt-1' : 'text-xs text-neutral-500 mt-1'}>16 Avenue de Verdun, Cagnes-sur-Mer, France</p>
+            <p className={theme === 'dark' ? 'text-neutral-400 text-base font-medium mt-1' : 'text-base text-neutral-500 font-medium mt-1'}>
+              <a href="tel:+33745115270" className="hover:text-white transition-colors">+33745115270</a>
+            </p>
           </div>
           <SocialLinks />
         </div>
