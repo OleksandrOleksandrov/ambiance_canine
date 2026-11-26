@@ -16,23 +16,32 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const analyticsEnabled =
+    process.env.NEXT_PUBLIC_ANALYTICS_ENABLED === 'true';
+
   return (
     <html lang="fr" suppressHydrationWarning data-theme="light">
-      <Script id="google-analytics-data-layer" strategy="beforeInteractive">
-        {`window.dataLayer = window.dataLayer || [];
+      {analyticsEnabled && (
+        <>
+          <Script id="google-analytics-data-layer" strategy="beforeInteractive">
+            {`window.dataLayer = window.dataLayer || [];
 function gtag(){window.dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-M2DQWMXWKT', { send_page_view: false });`}
-      </Script>
-      <Script
-        id="google-tag-manager"
-        src="https://www.googletagmanager.com/gtm.js?id=GTM-WFMR2MVQ"
-        strategy="beforeInteractive"
-      />
+          </Script>
+          <Script
+            id="google-tag-manager"
+            src="https://www.googletagmanager.com/gtm.js?id=GTM-WFMR2MVQ"
+            strategy="beforeInteractive"
+          />
+        </>
+      )}
       <body className="font-sans" suppressHydrationWarning>
-        <React.Suspense fallback={null}>
-          <GoogleAnalyticsPageView />
-        </React.Suspense>
+        {analyticsEnabled && (
+          <React.Suspense fallback={null}>
+            <GoogleAnalyticsPageView />
+          </React.Suspense>
+        )}
         <LanguageProvider>
           <ThemeProvider>{children}</ThemeProvider>
         </LanguageProvider>

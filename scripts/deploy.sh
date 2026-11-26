@@ -165,7 +165,13 @@ prune_old_snapstart_versions "$DB_SETUP_FUNCTION" "$DB_SETUP_VERSION"
 cd ../frontend
 printf 'Building and deploying frontend...\n'
 npm ci
-NEXT_PUBLIC_API_URL="$API_URL" npm run build
+ANALYTICS_ENABLED=false
+if [ "$ENVIRONMENT" = "prod" ]; then
+  ANALYTICS_ENABLED=true
+fi
+NEXT_PUBLIC_API_URL="$API_URL" \
+  NEXT_PUBLIC_ANALYTICS_ENABLED="$ANALYTICS_ENABLED" \
+  npm run build
 aws s3 sync ./out "s3://$FRONTEND_BUCKET/" --delete
 cd ..
 
